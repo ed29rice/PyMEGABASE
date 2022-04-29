@@ -1,7 +1,7 @@
 import pyBigWig
 import matplotlib.pyplot as plt
 import numpy as np
-import os, time, glob, random, requests, shutil
+import sys, os, time, glob, random, requests, shutil
 from tqdm import tqdm
 from joblib import Parallel, delayed
 from pydca.plmdca import plmdca
