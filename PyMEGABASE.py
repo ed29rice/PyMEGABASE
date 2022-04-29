@@ -10,6 +10,7 @@ from pydca.plmdca import plmdca
 class PyMEGABASE:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types'):
+        self.printHeader()
         self.cell_line=cell_line
         self.assembly=assembly
         self.signal_type=signal_type
@@ -376,3 +377,26 @@ class PyMEGABASE:
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
         
         return predict_type
+
+
+     def printHeader(self):
+        print('{:^96s}'.format("****************************************************************************************"))
+        print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
+        print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
+        print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
+        print('{:^96s}'.format("****************************************************************************************"))
+        print('')
+        print('{:^96s}'.format("The PyMEGABASE class performs the prediction of subcompartment annotations"))
+        print('{:^96s}'.format("based on Chip-Seq data tracks of Histone modifications. The input data is "))
+        print('{:^96s}'.format("obtained from ENCODE data base. PyMEGABASE is the implementation of MEGABASE"))
+        print('{:^96s}'.format("method of prediction with BigWig Chip-Seq files."))
+        print('')
+        print('{:^96s}'.format("PyMEGABASE description is described in: TBD,"))
+        print('')
+        print('{:^96s}'.format("This package is the product of contributions from a number of people, including:"))
+        print('{:^96s}'.format("Esteban Dodero-Rojas, Antonio Oliveira, Vinícius Contessoto,"))
+        print('{:^96s}'.format("Ryan Cheng, and, Jose Onuchic"))
+        print('{:^96s}'.format("Rice University"))
+        print('')
+        print('{:^96s}'.format("****************************************************************************************"))
+        sys.stdout.flush()
