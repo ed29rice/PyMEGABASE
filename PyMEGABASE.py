@@ -7,7 +7,7 @@ from joblib import Parallel, delayed
 from pydca.plmdca import plmdca
 
 
-class PyMEGABSE:
+class PyMEGABASE:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types'):
         self.cell_line=cell_line
