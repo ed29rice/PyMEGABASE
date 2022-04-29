@@ -398,4 +398,3 @@ class PyMEGABASE:
         print('{:^96s}'.format("Rice University"))
         print('')
         print('{:^96s}'.format("****************************************************************************************"))
-        sys.stdout.flush()
