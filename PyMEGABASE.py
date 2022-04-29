@@ -378,8 +378,7 @@ class PyMEGABASE:
         
         return predict_type
 
-
-     def printHeader(self):
+    def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
         print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
         print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
