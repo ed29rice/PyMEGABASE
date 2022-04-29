@@ -92,7 +92,7 @@ class PyMEGABASE:
             #    print('This experiment is unavailable:',exp)
             return exp_path
     
-    def download_and_process_cell_line_data(self):
+    def download_and_process_cell_line_data(self,nproc=10):
         
         try:
             os.mkdir(self.cell_line_path)
@@ -135,7 +135,7 @@ class PyMEGABASE:
                 list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
-        results = Parallel(n_jobs=10)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
+        results = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
 
         print('Experiments found in ENCODE:')
@@ -150,7 +150,7 @@ class PyMEGABASE:
                     print(e.split('-hum')[0])
                     self.unique.append(e)
                     
-    def download_and_process_ref_data(self):
+    def download_and_process_ref_data(self,nproc):
         
         try:
             os.mkdir(self.ref_cell_line_path)
@@ -196,7 +196,7 @@ class PyMEGABASE:
 
         print('Number of replicas:', len(list_names))
 
-        results = Parallel(n_jobs=10)(delayed(self.process_replica)(list_names[i],self.ref_cell_line_path,ref_chrm_size) 
+        results = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.ref_cell_line_path,ref_chrm_size) 
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
         print('Experiments found in ENCODE:')
         print(exp_found)
@@ -289,7 +289,7 @@ class PyMEGABASE:
                 f.write(''.join(sequences[:,i])+'\n')
     
     
-    def training(self):
+    def training(self,nproc=10):
         # Compute DCA scores using Pseudolikelihood maximization algorithm
         plmdca_inst = plmdca.PlmDCA(
             self.cell_line_path+"/sequences.fa",
@@ -297,7 +297,7 @@ class PyMEGABASE:
             seqid = 0.99,
             lambda_h = 100,
             lambda_J = 100,
-            num_threads = 12,
+            num_threads = nproc,
             max_iterations = 1000)
 
         # Train an get coupling and fields as lists
