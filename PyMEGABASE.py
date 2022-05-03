@@ -380,7 +380,7 @@ class PyMEGABASE:
             ndx = chr_gaps_ndx[gp]
             init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
             end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            predict_types[init_loci:end_loci]=6
+            predict_type[init_loci:end_loci]=6
      
         return predict_type
 
@@ -851,10 +851,8 @@ class PyMEGABASE_extended:
             ndx = chr_gaps_ndx[gp]
             init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
             end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            predict_types[init_loci:end_loci]=6
-       
-
- 
+            predict_type[init_loci:end_loci]=6
+        
         return predict_type
 
     def printHeader(self):
