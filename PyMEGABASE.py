@@ -713,7 +713,7 @@ class PyMEGABASE_extended:
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
 
         #Check which experiments are available to train 
-        unique=np.loadtxt(self.cell_line_path+'/11_marks.txt',dtype=str)
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         print('To train the following experiments are used:')
         print(unique)
 
@@ -796,7 +796,7 @@ class PyMEGABASE_extended:
         types=["A1" for i in range(self.chrm_size[chr-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
         
-        unique=np.loadtxt(self.cell_line_path+'/11_marks.txt',dtype=str)
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         print('To predict the following experiments are used:')
         print(unique)
         
