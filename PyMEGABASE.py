@@ -374,7 +374,7 @@ class PyMEGABASE:
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
         
         #Add gaps from UCSC database
-        gaps=np.loadtxt('centromeres/'+self.assembly+'_gaps.txt',dtype=str)
+        gaps=np.loadtxt('PyMEGABASE/centromeres/'+self.assembly+'_gaps.txt',dtype=str)
         chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
         for gp in range(len(chr_gaps_ndx)):
             ndx = chr_gaps_ndx[gp]
@@ -845,7 +845,7 @@ class PyMEGABASE_extended:
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
         
         #Add gaps from UCSC database
-        gaps=np.loadtxt('centromeres/'+self.assembly+'_gaps.txt',dtype=str)
+        gaps=np.loadtxt('PyMEGABASE/centromeres/'+self.assembly+'_gaps.txt',dtype=str)
         chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
         for gp in range(len(chr_gaps_ndx)):
             ndx = chr_gaps_ndx[gp]
