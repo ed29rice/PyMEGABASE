@@ -66,29 +66,32 @@ class PyMEGABASE:
                 f.write(text+' '+exp+'\n')
 
             #Load data from server
+            try:
+                bw = pyBigWig.open("https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bigWig")
+                for chr in range(1,23):
+                    signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
+    
+                    #Process signal and binning 
+                    signal=np.array(signal)
+                    per=np.percentile(signal[signal!=None],95)
+                    signal[signal==None]=0.0
+                    signal[signal>per]=per
+                    signal=signal*19/per
+                    signal=np.round(signal.astype(float)).astype(int)
+    
+                    #Save data
+                    with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
+    
+                        f.write("#chromosome file number of beads\n"+str(chrm_size[chr-1]))
+                        f.write("#\n")
+                        f.write("#bead, signal, discrete signal\n")
+                        for i in range(len(signal)):
+                            f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+                return exp_path
 
-            bw = pyBigWig.open("https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bigWig")
-            for chr in range(1,23):
-                signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
-
-                #Process signal and binning 
-                signal=np.array(signal)
-                per=np.percentile(signal[signal!=None],95)
-                signal[signal==None]=0.0
-                signal[signal>per]=per
-                signal=signal*19/per
-                signal=np.round(signal.astype(float)).astype(int)
-
-                #Save data
-                with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
-
-                    f.write("#chromosome file number of beads\n"+str(chrm_size[chr-1]))
-                    f.write("#\n")
-                    f.write("#bead, signal, discrete signal\n")
-                    for i in range(len(signal)):
-                        f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
-
-            return exp_path
+            except:
+                print('This experiment was incomplete:',text,'\nit will not be used.')
+                        
     
     def download_and_process_cell_line_data(self,nproc=10):
         
