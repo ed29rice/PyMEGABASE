@@ -1,4 +1,4 @@
-import pyBigWig
+iport pyBigWig
 import matplotlib.pyplot as plt
 import numpy as np
 import sys, os, time, glob, random, requests, shutil
@@ -59,7 +59,6 @@ class PyMEGABASE:
         if exp in self.histones:
             try:
                 os.mkdir(exp_path)
-                print('Created:',exp_path)
             except:
                 print('Directory ',exp_path,' already exist')
 
@@ -69,7 +68,6 @@ class PyMEGABASE:
             #Load data from server
 
             bw = pyBigWig.open("https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bigWig")
-            print("{} {}".format(text, exp))
             for chr in range(1,23):
                 signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
 
@@ -89,8 +87,7 @@ class PyMEGABASE:
                     f.write("#bead, signal, discrete signal\n")
                     for i in range(len(signal)):
                         f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
-            #except:
-            #    print('This experiment is unavailable:',exp)
+
             return exp_path
     
     def download_and_process_cell_line_data(self,nproc=10):
