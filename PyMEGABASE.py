@@ -1,4 +1,4 @@
-iport pyBigWig
+import pyBigWig
 import matplotlib.pyplot as plt
 import numpy as np
 import sys, os, time, glob, random, requests, shutil
