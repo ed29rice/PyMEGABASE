@@ -375,12 +375,12 @@ class PyMEGABASE:
         
         #Add gaps from UCSC database
         gaps=np.loadtxt('PyMEGABASE/centromeres/'+self.assembly+'_gaps.txt',dtype=str)
-        chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
-        for gp in range(len(chr_gaps_ndx)):
-            ndx = chr_gaps_ndx[gp]
+        chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
+        print(chr_gaps_ndx,chr)
+        for gp in chr_gaps_ndx:
             init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
             end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            print(init_loci,end_loci,gaps[gp,1],gaps[gp,2])
+            print(init_loci,end_loci,gaps[gp])
             predict_type[init_loci:end_loci]=6
      
         return predict_type
@@ -844,17 +844,17 @@ class PyMEGABASE_extended:
             energy_val=np.array(energy_val)
             #Select the state with the lowest energy
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
-        
+
         #Add gaps from UCSC database
         gaps=np.loadtxt('PyMEGABASE/centromeres/'+self.assembly+'_gaps.txt',dtype=str)
-        chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
-        for gp in range(len(chr_gaps_ndx)):
-            ndx = chr_gaps_ndx[gp]
+        chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
+        print(chr_gaps_ndx,chr)
+        for gp in chr_gaps_ndx:
             init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
             end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            print(init_loci,end_loci,gaps[gp,1],gaps[gp,2])
+            print(init_loci,end_loci,gaps[gp])
             predict_type[init_loci:end_loci]=6
-        
+               
         return predict_type
 
     def printHeader(self):
