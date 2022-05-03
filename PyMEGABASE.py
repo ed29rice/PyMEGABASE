@@ -373,6 +373,15 @@ class PyMEGABASE:
             #Select the state with the lowest energy
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
         
+        #Add gaps from UCSC database
+        gaps=np.loadtxt(self.assembly+'_gaps.txt',dtype=str)
+        chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
+        for gp in range(len(chr_gaps_ndx)):
+            ndx = chr_gaps_ndx[gp]
+            init_loci=np.round(gaps[gp,1]/50000).astype(int)
+            end_loci=np.round(gaps[gp,2]/50000).astype(int)
+            predict_types[init_loci:end_loci]=6
+     
         return predict_type
 
     def printHeader(self):
@@ -835,6 +844,17 @@ class PyMEGABASE_extended:
             #Select the state with the lowest energy
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
         
+        #Add gaps from UCSC database
+        gaps=np.loadtxt(self.assembly+'_gaps.txt',dtype=str)
+        chr_gaps_ndx=(gaps[:,0]=='chr'+str(chr))
+        for gp in range(len(chr_gaps_ndx)):
+            ndx = chr_gaps_ndx[gp]
+            init_loci=np.round(gaps[gp,1]/50000).astype(int)
+            end_loci=np.round(gaps[gp,2]/50000).astype(int)
+            predict_types[init_loci:end_loci]=6
+       
+
+ 
         return predict_type
 
     def printHeader(self):
