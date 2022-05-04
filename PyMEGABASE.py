@@ -593,6 +593,7 @@ class PyMEGABASE_extended:
         print('Number of replicas:', len(list_names))
         self.successful_exp = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
+        self.successful_exp= [i for i in self.successful_exp if i]
         self.successful_unique_exp=np.unique(self.successful_exp)
         print('Experiments found in ENCODE:')
         print(self.successful_unique_exp)
