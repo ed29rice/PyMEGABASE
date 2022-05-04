@@ -774,7 +774,7 @@ class PyMEGABASE_extended:
             lambda_J = 100,
             num_threads = nproc,
             max_iterations = 1000)
-
+        print('Training started')
         # Train an get coupling and fields as lists
         fields_and_couplings = plmdca_inst.get_fields_and_couplings_from_backend()
         couplings = plmdca_inst.get_couplings_no_gap_state(fields_and_couplings)
@@ -805,9 +805,21 @@ class PyMEGABASE_extended:
         print('J and H produced')
         self.h=h
         self.J=J
+        h_and_J={}
+        h_and_J['h']=h
+        h_and_J['J']=J
+        #Save fields and couplings 
+        with open((self.cell_line_path+'/h_and_J.npy', 'wb') as f:
+            np.save(f, h_and_J)
         
-    def prediction(self,chr=1):
-        
+    def prediction(self,chr=1,h_and_J_file=None):
+       
+        if h_and_J_file!=None:
+            with open(h_and_J_file, 'rb') as f:
+                h_and_J = np.load(f)
+            self.h=h_and_J['h']
+            self.J=h_and_J['J']
+ 
         types=["A1" for i in range(self.chrm_size[chr-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
         
