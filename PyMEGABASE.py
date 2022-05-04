@@ -522,7 +522,7 @@ class PyMEGABASE_extended:
                             f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 #except:
                 #    print('This experiment is unavailable:',exp)
-                return exp_path
+                return exp
 
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
@@ -591,17 +591,17 @@ class PyMEGABASE_extended:
                 list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
-        results = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
+        self.successful_exp = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
-
+        self.successful_unique_exp=np.unique(self.successful_exp)
         print('Experiments found in ENCODE:')
-        print(self.exp_found)
+        print(self.successful_unique_exp)
         
         self.unique=[]
         print('Prediction will use:')
         with open(self.cell_line_path+'/unique_exp.txt', 'w') as f:
             for e in self.experiments_unique:
-                if e in self.exp_found.keys():
+                if e in self.successful_unique_exp:
                     f.write(e.split('-hum')[0]+'\n')
                     print(e.split('-hum')[0])
                     self.unique.append(e)
