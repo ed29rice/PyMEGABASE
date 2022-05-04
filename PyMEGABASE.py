@@ -849,7 +849,7 @@ class PyMEGABASE_extended:
         #Prediction 
         predict_type=np.zeros(self.chr_averages.shape[1])
         fails=0;r=0;
-        #self.L=len(self.h)
+        self.L=len(self.h)
         for loci in range(self.chr_averages.shape[1]):
             energy_val=[]
             energy=0
