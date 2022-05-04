@@ -809,7 +809,7 @@ class PyMEGABASE_extended:
         h_and_J['h']=h
         h_and_J['J']=J
         #Save fields and couplings 
-        with open((self.cell_line_path+'/h_and_J.npy', 'wb') as f:
+        with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
         
     def prediction(self,chr=1,h_and_J_file=None):
