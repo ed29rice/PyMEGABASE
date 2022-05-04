@@ -817,6 +817,7 @@ class PyMEGABASE_extended:
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
                 h_and_J = np.load(f, allow_pickle=True)
+                h_and_J = h_and_J.item()
             self.h=h_and_J['h']
             self.J=h_and_J['J']
  
