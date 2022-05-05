@@ -5,6 +5,8 @@ import ipywidgets as widgets
 class cell_lines:
     def __init__(self, assembly='hg19',signal_type='signal p-value',
     histones=True,tf=False,atac=False,small_rna=False,total_rna=False):
+        self.assembly=assembly  
+        self.signal_type=signal_type
         self.hist=histones
         self.tf=tf
         self.atac=atac
@@ -36,8 +38,10 @@ class cell_lines:
         cell_lines=[]
         cell_lines_url=[]
         for k in content.split('\\n')[1:-1]:
-            name=k.split('\\t')[10]
-            cell_lines.append(name)
+            l=k.split('\\t')
+            if l[5]==self.ref_assembly and l[4]==self.signal_type:
+                name=l[10]
+                cell_lines.append(name)
         cell_lines=np.unique(cell_lines)
         
         self.menu=widgets.Dropdown(
