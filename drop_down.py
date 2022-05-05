@@ -39,7 +39,7 @@ class cell_lines:
         cell_lines_url=[]
         for k in content.split('\\n')[1:-1]:
             l=k.split('\\t')
-            if l[5]==self.ref_assembly and l[4]==self.signal_type:
+            if l[5]==self.assembly and l[4]==self.signal_type:
                 name=l[10]
                 cell_lines.append(name)
         cell_lines=np.unique(cell_lines)
