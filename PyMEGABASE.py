@@ -480,6 +480,11 @@ class PyMEGABASE_extended:
                 experiments.append('total-RNA-seq')          
 
         self.experiments_unique=np.unique(experiments)   
+
+        print('Selected cell line to predict: '+self.cell_line)
+        print('Selected assembly: '+self.assembly)
+        print('Selected signal type: '+self.signal_type)
+
         
     def process_replica(self,line,cell_line_path,chrm_size):
         text=line.split()[0]
@@ -595,11 +600,10 @@ class PyMEGABASE_extended:
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
         self.successful_exp= [i for i in self.successful_exp if i]
         self.successful_unique_exp=np.unique(self.successful_exp)
-        print('Experiments found in ENCODE:')
-        print(self.successful_unique_exp)
-        
+
+        print('Experiments found in ENCODE for the selected cell line:')
         self.unique=[]
-        print('Prediction will use:')
+
         with open(self.cell_line_path+'/unique_exp.txt', 'w') as f:
             for e in self.experiments_unique:
                 if e in self.successful_unique_exp:
@@ -674,8 +678,6 @@ class PyMEGABASE_extended:
 
         results = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.ref_cell_line_path,ref_chrm_size) 
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
-        print('Experiments found in ENCODE:')
-        print(exp_found)
 
         print('Prediction will use:')
         with open(self.ref_cell_line_path+'/unique_exp.txt', 'w') as f:
@@ -731,7 +733,6 @@ class PyMEGABASE_extended:
         #Check which experiments are available to train 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         print('To train the following experiments are used:')
-        print(unique)
 
         #Load each track and average over 
         all_averages=[]
@@ -814,7 +815,7 @@ class PyMEGABASE_extended:
             np.save(f, h_and_J)
         
     def prediction(self,chr=1,h_and_J_file=None):
-       
+        print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
                 h_and_J = np.load(f, allow_pickle=True)
@@ -826,8 +827,6 @@ class PyMEGABASE_extended:
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
         
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
-        print('To predict the following experiments are used:')
-        print(unique)
         
         #Load each track and average over 
         all_averages=[]
