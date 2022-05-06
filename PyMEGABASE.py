@@ -740,7 +740,7 @@ class PyMEGABASE_extended:
         for u in unique:
             reps=[]
             print(u)
-            for i in glob.glob(self.ref_cell_line_path+'/'+u+'*'):
+            for i in glob.glob(self.ref_cell_line_path+'/'+str(u)+'*'):
                 tmp=[]
                 try:
                     for chr in chrms:
