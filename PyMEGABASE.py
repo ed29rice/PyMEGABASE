@@ -827,13 +827,13 @@ class PyMEGABASE_extended:
         types=["A1" for i in range(self.chrm_size[chr-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
         
-        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
-        
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
+        if unique.shape==(): unique=[unique]
         #Load each track and average over 
         all_averages=[]
         for u in unique:
             reps=[]
-            for i in glob.glob(self.cell_line_path+'/'+u+'*'):
+            for i in glob.glob(self.cell_line_path+'/'+str(u)+'*'):
                 tmp=[]
                 try:
                     tmp=np.loadtxt(i+'/chr'+str(chr)+'.track',skiprows=3)[:,2]
