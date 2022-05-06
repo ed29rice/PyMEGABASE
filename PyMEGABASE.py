@@ -732,6 +732,7 @@ class PyMEGABASE_extended:
 
         #Check which experiments are available to train 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
+        if unique.shape==(): unique=[unique]
         print('To train the following experiments are used:')
 
         #Load each track and average over 
