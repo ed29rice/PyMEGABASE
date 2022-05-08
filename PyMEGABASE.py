@@ -1004,7 +1004,7 @@ class PyMEGABASE_z_extended:
                     signal[signal>per]=per
                     signal_z=(signal-np.mean(signal))/np.std(signal)
                     signal_z=signal_z-np.min(signal_z)
-                    signal=signal_z*10/np.max(signal_z)
+                    signal=signal_z*5/np.max(signal_z)
                     signal=np.round(signal.astype(float)).astype(int)
     
                     #Save data
