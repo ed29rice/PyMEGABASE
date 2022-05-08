@@ -900,7 +900,8 @@ class PyMEGABASE_extended:
 class PyMEGABASE_z_extended:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types',
-                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False):
+                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False,nstates=20):
+        self.nstates=nstates
         self.printHeader()
         self.cell_line=cell_line
         self.assembly=assembly
@@ -1004,7 +1005,7 @@ class PyMEGABASE_z_extended:
                     signal[signal>per]=per
                     signal_z=(signal-np.mean(signal))/np.std(signal)
                     signal_z=signal_z-np.min(signal_z)
-                    signal=signal_z*5/np.max(signal_z)
+                    signal=signal_z*self.nstates/np.max(signal_z)
                     signal=np.round(signal.astype(float)).astype(int)
     
                     #Save data
