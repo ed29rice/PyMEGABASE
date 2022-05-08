@@ -1000,7 +1000,7 @@ class PyMEGABASE_z_extended:
                     #Process signal and binning 
                     signal=np.array(signal)
                     per=np.percentile(signal[signal!=None],95)
-                    signal[signal==None]=np.mean(signal[signal!=None])
+                    signal[signal==None]=np.min(signal[signal!=None])
                     signal[signal>per]=per
                     signal_z=(signal-np.mean(signal))/np.std(signal)
                     signal_z=signal_z-np.min(signal_z)
