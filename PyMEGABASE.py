@@ -1240,7 +1240,7 @@ class PyMEGABASE_z_extended:
                 except:
                     print(i,' failed with at least one chromosome')
             reps=np.array(reps)
-            ave_reps=np.mean(reps,axis=0)
+            ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
 
         all_averages=np.array(all_averages)
@@ -1253,8 +1253,7 @@ class PyMEGABASE_z_extended:
         with open(self.cell_line_path+"/sequences.fa",'w',encoding = 'utf-8') as f:
             for i in range(len(sequences.T)):
                 f.write('>'+str(i).zfill(4)+'\n')
-                f.write(''.join(sequences[:,i])+'\n')
-    
+                f.write(''.join(sequences[:,i])+'\n')    
     
     def training(self,nproc=10):
         # Compute DCA scores using Pseudolikelihood maximization algorithm
