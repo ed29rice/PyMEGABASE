@@ -1003,9 +1003,7 @@ class PyMEGABASE_z_extended:
                     per=np.percentile(signal[signal!=None],95)
                     signal[signal==None]=np.min(signal[signal!=None])
                     signal[signal>per]=per
-                    signal_z=(signal-np.mean(signal))/np.std(signal)
-                    signal_z=signal_z-np.min(signal_z)
-                    signal=signal_z*self.nstates/np.max(signal_z)
+                    signal=signal*self.nstates/np.max(signal)
                     signal=np.round(signal.astype(float)).astype(int)
     
                     #Save data
@@ -1242,7 +1240,12 @@ class PyMEGABASE_z_extended:
                 except:
                     print(i,' failed with at least one chromosome')
             reps=np.array(reps)
-            ave_reps=np.round(np.mean(reps,axis=0))
+            ave_reps=np.mean(reps,axis=0)
+            #Adding z score standarization
+            signal_z=(ave_reps-np.mean(ave_reps))/np.std(ave_reps)
+            signal_z=signal_z-np.min(signal_z)
+            ave_reps=np.round(signa_z*self.nstates/np.max(signal_z))
+
             all_averages.append(ave_reps)
 
         all_averages=np.array(all_averages)
@@ -1333,6 +1336,12 @@ class PyMEGABASE_z_extended:
                     print(i,' failed with at least one chromosome')
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
+
+            #Adding z score standarization
+            signal_z=(ave_reps-np.mean(ave_reps))/np.std(ave_reps)
+            signal_z=signal_z-np.min(signal_z)
+            ave_reps=np.round(signa_z*self.nstates/np.max(signal_z))
+
             all_averages.append(ave_reps)
 
         all_averages=np.array(all_averages)
