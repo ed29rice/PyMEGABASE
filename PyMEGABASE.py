@@ -1244,7 +1244,7 @@ class PyMEGABASE_z_extended:
             #Adding z score standarization
             signal_z=(ave_reps-np.mean(ave_reps))/np.std(ave_reps)
             signal_z=signal_z-np.min(signal_z)
-            ave_reps=np.round(signa_z*self.nstates/np.max(signal_z))
+            ave_reps=np.round(signal_z*self.nstates/np.max(signal_z))
 
             all_averages.append(ave_reps)
 
@@ -1340,7 +1340,7 @@ class PyMEGABASE_z_extended:
             #Adding z score standarization
             signal_z=(ave_reps-np.mean(ave_reps))/np.std(ave_reps)
             signal_z=signal_z-np.min(signal_z)
-            ave_reps=np.round(signa_z*self.nstates/np.max(signal_z))
+            ave_reps=np.round(signal_z*self.nstates/np.max(signal_z))
 
             all_averages.append(ave_reps)
 
