@@ -1001,9 +1001,9 @@ class PyMEGABASE_z_extended:
                     #Process signal and binning 
                     signal=np.array(signal)
                     per=np.percentile(signal[signal!=None],95)
-                    signal[signal==None]=np.min(signal[signal!=None])
+                    signal[signal==None]=0.0
                     signal[signal>per]=per
-                    signal=signal*self.nstates/np.max(signal)
+                    signal=signal*self.nstates/per
                     signal=np.round(signal.astype(float)).astype(int)
     
                     #Save data
