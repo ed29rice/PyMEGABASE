@@ -779,14 +779,14 @@ class PyMEGABASE_extended:
                 f.write(''.join(sequences[:,i])+'\n')
     
     
-    def training(self,nproc=10):
+    def training(self,nproc=10,lambda_h=100,lambda_J=100):
         # Compute DCA scores using Pseudolikelihood maximization algorithm
         plmdca_inst = plmdca.PlmDCA(
             self.cell_line_path+"/sequences.fa",
             'protein',
             seqid = 0.99,
-            lambda_h = 100,
-            lambda_J = 100,
+            lambda_h = lambda_h,
+            lambda_J = lambda_J,
             num_threads = nproc,
             max_iterations = 1000)
         print('Training started')
