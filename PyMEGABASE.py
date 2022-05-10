@@ -475,9 +475,13 @@ class PyMEGABASE_extended:
             elif l[5]==self.ref_assembly and l[4]==self.signal_type and l[7]=='TF ChIP-seq':
                 experiments.append(l[22])
             elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='small RNA-seq':
-                experiments.append('small-RNA-seq')
+                experiments.append('plus-small-RNA-seq')
             elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='total RNA-seq':
-                experiments.append('total-RNA-seq')          
+                experiments.append('plus-total-RNA-seq')          
+            elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='small RNA-seq':
+                experiments.append('minus-small-RNA-seq')
+            elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
+                experiments.append('minus-total-RNA-seq')          
 
         self.experiments_unique=np.unique(experiments)   
 
@@ -569,10 +573,14 @@ class PyMEGABASE_extended:
                 elif l[5]==self.assembly and l[4]==self.signal_type and l[7]=='TF ChIP-seq':
                     f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
                 elif l[5]==self.assembly and l[4]=='plus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
                 elif l[5]==self.assembly and l[4]=='plus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
-        
+                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                elif l[5]==self.assembly and l[4]=='minus strand signal of all reads' and l[7]=='small RNA-seq':
+                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                elif l[5]==self.assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
+                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+       
         count=0
         self.exp_found={}
         exp_name=''
@@ -647,10 +655,14 @@ class PyMEGABASE_extended:
                 elif l[5]==self.ref_assembly and l[4]==self.signal_type and l[7]=='TF ChIP-seq':
                     f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
-          
+                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='small RNA-seq':
+                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
+                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+         
         ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028])
 
         count=0
