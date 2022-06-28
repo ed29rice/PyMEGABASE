@@ -543,11 +543,11 @@ class PyMEGABASE_extended:
                 #Save data
                 with open(exp_path+'/chr'+chr+'.track', 'w') as f:
 
-                f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
-                f.write("#\n")
-                f.write("#bead, signal, discrete signal\n")
-                for i in range(len(signal)):
-                    f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+                    f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
+                    f.write("#\n")
+                    f.write("#bead, signal, discrete signal\n")
+                    for i in range(len(signal)):
+                        f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 #except:
                 #    print('This experiment is unavailable:',exp)
                 return exp
