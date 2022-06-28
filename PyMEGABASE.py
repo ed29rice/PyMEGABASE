@@ -906,7 +906,7 @@ class PyMEGABASE_extended:
                
         return predict_type
 
-    def prediction_X(self,chr=X,h_and_J_file=None):
+    def prediction_X(self,chr='X',h_and_J_file=None):
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
