@@ -446,9 +446,9 @@ class PyMEGABASE_extended:
         self.INT_TO_TYPE = {self.TYPE_TO_INT[k]:k for k in self.TYPE_TO_INT.keys()}
         
         if assembly=='GRCh38':
-            self.chrm_size = np.array([4980,4844,3966,3805,3631,3417,3187,2903,2768,2676,2702,2666,2288,2141,2040,1807,1666,1608,1173,1289,935,1017])
+            self.chrm_size = np.array([4980,4844,3966,3805,3631,3417,3187,2903,2768,2676,2702,2666,2288,2141,2040,1807,1666,1608,1173,1289,935,1017,3121])
         else:
-            self.chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028])
+            self.chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,3105])
 
         url='https://www.encodeproject.org/metadata/?type=Experiment&'
         if self.hist==True:
@@ -529,6 +529,25 @@ class PyMEGABASE_extended:
                         f.write("#bead, signal, discrete signal\n")
                         for i in range(len(signal)):
                             f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+                chr='X'
+                signal = bw.stats("chr"+chr, type="mean", nBins=chrm_size[-1])
+
+                #Process signal and binning
+                signal=np.array(signal)
+                per=np.percentile(signal[signal!=None],95)
+                signal[signal==None]=0.0
+                signal[signal>per]=per
+                signal=signal*19/per
+                signal=np.round(signal.astype(float)).astype(int)
+
+                #Save data
+                with open(exp_path+'/chr'+chr+'.track', 'w') as f:
+
+                f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
+                f.write("#\n")
+                f.write("#bead, signal, discrete signal\n")
+                for i in range(len(signal)):
+                    f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 #except:
                 #    print('This experiment is unavailable:',exp)
                 return exp
@@ -886,6 +905,68 @@ class PyMEGABASE_extended:
             predict_type[init_loci:end_loci]=6
                
         return predict_type
+
+    def prediction_X(self,chr=X,h_and_J_file=None):
+        print('Predicting subcompartments for chromosome: ',chr)       
+        if h_and_J_file!=None:
+            with open(h_and_J_file, 'rb') as f:
+                h_and_J = np.load(f, allow_pickle=True)
+                h_and_J = h_and_J.item()
+            self.h=h_and_J['h']
+            self.J=h_and_J['J']
+ 
+        types=["A1" for i in range(self.chrm_size[chr-1])]
+        int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
+        
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
+        if unique.shape==(): unique=[unique]
+        #Load each track and average over 
+        all_averages=[]
+        for u in unique:
+            reps=[]
+            for i in glob.glob(self.cell_line_path+'/'+str(u)+'*'):
+                tmp=[]
+                try:
+                    tmp=np.loadtxt(i+'/chr'+str(chr)+'.track',skiprows=3)[:,2]
+                    reps.append(tmp)
+                except:
+                    print(i,' failed with at least one chromosome')
+            reps=np.array(reps)
+            ave_reps=np.round(np.mean(reps,axis=0))
+            all_averages.append(ave_reps)
+
+        all_averages=np.array(all_averages)
+        self.chr_averages=self.build_state_vector(int_types,all_averages)-1
+        
+        #Prediction 
+        predict_type=np.zeros(self.chr_averages.shape[1])
+        fails=0;r=0;
+        self.L=len(self.h)
+        for loci in range(self.chr_averages.shape[1]):
+            energy_val=[]
+            energy=0
+            #Check energy for all possible 5 states (A1,A2,B1,B2,B3)
+            for state in range(5):
+                tmp_energy=-self.h[0,state]
+                for j in range(1,self.L):
+                    s2=int(self.chr_averages[j,loci])
+                    tmp_energy=tmp_energy-self.J[0,j,state,s2]
+                energy_val.append(energy+tmp_energy)
+            energy_val=np.array(energy_val)
+            #Select the state with the lowest energy
+            predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
+
+        #Add gaps from UCSC database
+        gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+        chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
+        for gp in chr_gaps_ndx:
+            init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
+            end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
+            predict_type[init_loci:end_loci]=6
+               
+        return predict_type
+
+
 
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
