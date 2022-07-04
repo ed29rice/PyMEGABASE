@@ -696,14 +696,16 @@ class PyMEGABASE_extended:
                 text=line.split()[0]
                 exp=line.split()[1]
                 #Register if experiment is new
-                if exp!=exp_name:
-                    try:
-                        count=exp_found[exp]+1
-                    except:
-                        count=1
-                    exp_name=exp
-                exp_found[exp]=count
-                list_names.append(text+' '+exp+' '+str(count))
+                if (exp in self.successful_unique_exp) or (text in self.successful_unique_exp):
+                    print(text+' '+exp+' '+str(count))
+                    if exp!=exp_name:
+                        try:
+                            count=exp_found[exp]+1
+                        except:
+                            count=1
+                        exp_name=exp
+                    exp_found[exp]=count
+                    list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
 
