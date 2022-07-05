@@ -1102,7 +1102,7 @@ class PyMEGABASE_extended_norm:
                     signal[signal==None]=per_min
                     signal[signal<per_min]=per_min
                     signal[signal>per]=per
-                    singal=signal-per_min
+                    signal=signal-per_min
                     signal=signal*19/(per-per_min)
                     signal=np.round(signal.astype(float)).astype(int)
     
