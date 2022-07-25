@@ -25,8 +25,9 @@ class cell_lines:
         if self.total_rna==True:
             url=url+'&assay_title=total+RNA-seq'
 
-        url=url+'&files.file_type=bigWig&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens'
+        #url=url+'&files.file_type=bigWig&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens'
         
+        url=url+'&files.file_type=bigWig&status=in+progress&status=released&replicates.library.biosample.donor.organism.scientific_name=Homo+sapiens'
 
         print('Looking for all available cell lines')
         r = requests.get(url)
