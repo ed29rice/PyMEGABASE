@@ -991,7 +991,7 @@ class PyMEGABASE_extended:
         print('{:^96s}'.format("****************************************************************************************"))
 
 #PyMEGABASE OPTIONALLY ADDING EXTRA TRACKS
-class PyMEGABASE_extended:
+class PyMEGABASE_extra_tracks:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types',
                  histones=True,tf=False,atac=False,small_rna=False,total_rna=False):
