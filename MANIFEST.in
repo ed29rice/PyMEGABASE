@@ -1,0 +1,3 @@
+include PyMEGABASE/share/gaps/*
+include PyMEGABASE/share/GM12878_Original_MEGABASE/*
+include PyMEGABASE/share/types/*
