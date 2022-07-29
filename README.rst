@@ -15,9 +15,9 @@ PyMEGABASE
 .. |PyPI| image:: https://img.shields.io/pypi/v/OpenMiChroM.svg
    :target: https://pypi.org/project/OpenMiChroM/
 .. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/OpenMiChroM.svg
-   :target: https://anaconda.org/conda-forge/OpenMiChroM
-.. |ReadTheDocs| image:: https://readthedocs.org/projects/open-michrom/badge/?version=latest
-   :target: https://open-michrom.readthedocs.io/en/latest/
+   :target: https://anaconda.org/conda-forge/PyMEGABASE
+.. |ReadTheDocs| image:: https://readthedocs.org/projects/pymegabase/badge/?version=latest
+   :target: https://pymegabase.readthedocs.io/en/latest/
 .. |NDB| image:: https://img.shields.io/badge/NDB-Nucleome%20Data%20Bank-informational
    :target: https://ndb.rice.edu/
 .. |Update| image:: https://anaconda.org/conda-forge/openmichrom/badges/latest_release_date.svg   
