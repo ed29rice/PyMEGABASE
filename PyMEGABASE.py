@@ -846,6 +846,33 @@ class PyMEGABASE_extended:
         #Save fields and couplings 
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
+
+    def test_set(self,chr=1,h_and_J_file=None):
+        print('Test set for chromosome: ',chr)        
+        types=["A1" for i in range(self.chrm_size[chr-1])]
+        int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
+        
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
+        if unique.shape==(): unique=[unique]
+        #Load each track and average over 
+        all_averages=[]
+        for u in unique:
+            reps=[]
+            for i in glob.glob(self.cell_line_path+'/'+str(u)+'*'):
+                tmp=[]
+                try:
+                    tmp=np.loadtxt(i+'/chr'+str(chr)+'.track',skiprows=3)[:,2]
+                    reps.append(tmp)
+                except:
+                    print(i,' failed with at least one chromosome')
+            reps=np.array(reps)
+            ave_reps=np.round(np.mean(reps,axis=0))
+            all_averages.append(ave_reps)
+
+        all_averages=np.array(all_averages)
+        chr_averages=self.build_state_vector(int_types,all_averages)-1
+        return chr_averages
+
         
     def prediction(self,chr=1,h_and_J_file=None):
         print('Predicting subcompartments for chromosome: ',chr)       
