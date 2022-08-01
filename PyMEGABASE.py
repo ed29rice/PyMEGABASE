@@ -871,7 +871,7 @@ class PyMEGABASE_extended:
 
         all_averages=np.array(all_averages)
         chr_averages=self.build_state_vector(int_types,all_averages)-1
-        return chr_averages
+        return chr_averages[1:]
 
         
     def prediction(self,chr=1,h_and_J_file=None):
