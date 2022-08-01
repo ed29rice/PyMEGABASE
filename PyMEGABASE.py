@@ -788,7 +788,7 @@ class PyMEGABASE_extended:
 
         all_averages=np.array(all_averages)
         all_averages=self.build_state_vector(int_types,all_averages)
-
+        self.tmatrix=np.copy(all_averages)
         # Translate Potts states to sequences
         sequences=np.array(list(map(self.INT_TO_RES.get, all_averages.flatten()))).reshape(all_averages.shape)
 
