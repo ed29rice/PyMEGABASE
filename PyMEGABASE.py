@@ -748,13 +748,14 @@ class PyMEGABASE_extended:
         return all_averages
 
                     
-    def training_set_up(self):
-        # We are training in odd chromosomes data
-        if self.cell_line=='GM12878' and self.assembly=='hg19':
-            chrms=[1,3,5,7,9,11,13,15,17,19,21]
-        else:
-            chrms=[i for i in range(1,23)]
-
+    def training_set_up(self,chrms=None):
+        if chrms==None:
+            # We are training in odd chromosomes data
+            if self.cell_line=='GM12878' and self.assembly=='hg19':
+                chrms=[1,3,5,7,9,11,13,15,17,19,21]
+            else:
+                chrms=[i for i in range(1,23)]
+        
         #Load types from Rao et al 2014 paper
         types=[]
         for chr in chrms:
