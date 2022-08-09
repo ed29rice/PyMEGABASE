@@ -637,6 +637,10 @@ class PyMEGABASE_extended:
                     f.write(e.split('-hum')[0]+'\n')
                     print(e.split('-hum')[0])
                     self.unique.append(e)
+        if len(self.unique) > 4:
+            print('Predictions would use: ',len(self.unique),' experiments')
+        else:
+            print('This sample only has ',len(self.unique),' experiments. We do not recommend prediction on samples with less than 5 different experiments.')
                     
     def download_and_process_ref_data(self,nproc):
         
