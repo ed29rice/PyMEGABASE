@@ -854,16 +854,15 @@ class PyMEGABASE_extended:
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
 
-    def get_couplings():
+    def get_couplings(self):
         dca_scores_not_apc = list()
-        L = self.plmdca_inst.__seqs_len
-        q = self.plmdca_inst.__num_site_states
+        L = self.plmdca_inst._get_num_and_len_of_seqs()[1]
+        q = 21
 
         couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
         qm1 = q - 1
-        logger.info('\n\tComputing non-APC sorted DCA score') 
-        for i in range(self.plmdca_inst.__seqs_len -1):
-            for j in range(i + 1, self.plmdca_inst.__seqs_len):
+        for i in range(L-1):
+            for j in range(i + 1, L):
                 start_indx = int(((L *  (L - 1)/2) - (L - i) * ((L-i)-1)/2  + j  - i - 1) * qm1 * qm1)
                 end_indx = start_indx + qm1 * qm1
                 couplings_ij = couplings[start_indx:end_indx]
@@ -881,8 +880,9 @@ class PyMEGABASE_extended:
                 dca_scores_not_apc.append(data)
         dca_scores_not_apc = sorted(dca_scores_not_apc, key=lambda k : k[1], reverse=True)
 
+        av_score_sites = list()
+        N = L
         scores_plmdca = dca_scores_not_apc
-        logger.info('\n\tPerforming average product correction (APC) of FN  of DCA scores')
         for i in range(N):
             i_scores = [score for pair, score in scores_plmdca if i in pair]
             assert len(i_scores) == N - 1
@@ -899,7 +899,12 @@ class PyMEGABASE_extended:
         # sort the scores as doing APC may have disrupted the ordering
         sorted_FN_APC = sorted(sorted_FN_APC, key = lambda k : k[1], reverse=True)
 
-        return sorted_FN_APC
+        couplings_with_comparments=[]
+        for i in range(len(sorted_FN_APC)):
+            if sorted_FN_APC[i][0][0]==0:
+                couplings_with_comparments.append([self.experiments_unique[(sorted_FN_APC[i][0][1]-1)%11],int((sorted_FN_APC[i][0][1]-1)/11)-2])
+
+        return couplings_with_comparments
 
     def test_set(self,chr=1,h_and_J_file=None):
         print('Test set for chromosome: ',chr)        
