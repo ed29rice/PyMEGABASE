@@ -816,7 +816,9 @@ class PyMEGABASE_extended:
             max_iterations = 1000)
         print('Training started')
         # Train an get coupling and fields as lists
-        fields_and_couplings = plmdca_inst.get_fields_and_couplings_from_backend()
+        self.fields_and_couplings = plmdca_inst.get_fields_and_couplings_from_backend()
+        self.plmdca_inst=plmdca_inst
+        fields_and_couplings = self.fields_and_couplings
         couplings = plmdca_inst.get_couplings_no_gap_state(fields_and_couplings)
         fields = plmdca_inst.get_fields_no_gap_state(fields_and_couplings)
 
@@ -851,6 +853,53 @@ class PyMEGABASE_extended:
         #Save fields and couplings 
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
+
+    def get_couplings():
+        dca_scores_not_apc = list()
+        L = self.plmdca_inst.__seqs_len
+        q = self.plmdca_inst.__num_site_states
+
+        couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
+        qm1 = q - 1
+        logger.info('\n\tComputing non-APC sorted DCA score') 
+        for i in range(self.plmdca_inst.__seqs_len -1):
+            for j in range(i + 1, self.plmdca_inst.__seqs_len):
+                start_indx = int(((L *  (L - 1)/2) - (L - i) * ((L-i)-1)/2  + j  - i - 1) * qm1 * qm1)
+                end_indx = start_indx + qm1 * qm1
+                couplings_ij = couplings[start_indx:end_indx]
+                
+                couplings_ij = np.reshape(couplings_ij, (qm1,qm1))
+                avx = np.mean(couplings_ij, axis=1)
+                avx = np.reshape(avx, (qm1, 1))
+                avy = np.mean(couplings_ij, axis=0)
+                avy = np.reshape(avy, (1, qm1))
+                av = np.mean(couplings_ij)
+                couplings_ij = couplings_ij -  avx - avy + av
+                dca_score = np.sum(couplings_ij * couplings_ij)
+                dca_score = np.sqrt(dca_score)
+                data = ((i, j), dca_score)
+                dca_scores_not_apc.append(data)
+        dca_scores_not_apc = sorted(dca_scores_not_apc, key=lambda k : k[1], reverse=True)
+
+        scores_plmdca = dca_scores_not_apc
+        logger.info('\n\tPerforming average product correction (APC) of FN  of DCA scores')
+        for i in range(N):
+            i_scores = [score for pair, score in scores_plmdca if i in pair]
+            assert len(i_scores) == N - 1
+            i_scores_sum = sum(i_scores)
+            i_scores_ave = i_scores_sum/float(N - 1)
+            av_score_sites.append(i_scores_ave)
+        # compute average product corrected DI
+        av_all_scores = sum(av_score_sites)/float(N)
+        sorted_FN_APC = list()
+        for pair, score in scores_plmdca:
+            i, j = pair
+            score_apc = score - av_score_sites[i] * (av_score_sites[j]/av_all_scores)
+            sorted_FN_APC.append((pair, score_apc))
+        # sort the scores as doing APC may have disrupted the ordering
+        sorted_FN_APC = sorted(sorted_FN_APC, key = lambda k : k[1], reverse=True)
+
+        return sorted_FN_APC
 
     def test_set(self,chr=1,h_and_J_file=None):
         print('Test set for chromosome: ',chr)        
