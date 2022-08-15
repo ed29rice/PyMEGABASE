@@ -854,12 +854,25 @@ class PyMEGABASE_extended:
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
 
-    def get_couplings(self):
-        dca_scores_not_apc = list()
-        L = self.plmdca_inst._get_num_and_len_of_seqs()[1]
-        q = 21
 
-        couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
+    def get_couplings(self,h_and_J_file=None):
+     
+        if h_and_J_file!=None:
+            with open(h_and_J_file, 'rb') as f:
+                h_and_J = np.load(f, allow_pickle=True)
+                h_and_J = h_and_J.item()
+            couplings = h_and_J['J_flat']
+            L=self.J.shape[0]
+        else:
+            couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
+            L = self.plmdca_inst._get_num_and_len_of_seqs()[1]
+
+        self.experiments_unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
+        print(self.experiments_unique)
+        # Code from #ADD REF#
+        dca_scores_not_apc = list()
+
+        q = 21
         qm1 = q - 1
         for i in range(L-1):
             for j in range(i + 1, L):
@@ -898,7 +911,7 @@ class PyMEGABASE_extended:
             sorted_FN_APC.append((pair, score_apc))
         # sort the scores as doing APC may have disrupted the ordering
         sorted_FN_APC = sorted(sorted_FN_APC, key = lambda k : k[1], reverse=True)
-
+        # Map contact to experiement and position
         couplings_with_comparments=[]
         for i in range(len(sorted_FN_APC)):
             if sorted_FN_APC[i][0][0]==0:
