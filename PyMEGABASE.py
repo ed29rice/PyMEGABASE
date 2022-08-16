@@ -850,6 +850,7 @@ class PyMEGABASE_extended:
         h_and_J={}
         h_and_J['h']=h
         h_and_J['J']=J
+        h_and_J['J_flat']=couplings
         #Save fields and couplings 
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
