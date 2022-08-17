@@ -917,7 +917,7 @@ class PyMEGABASE_extended:
         couplings_with_comparments=[]
         for i in range(len(sorted_FN_APC)):
             if sorted_FN_APC[i][0][0]==0:
-                couplings_with_comparments.append([self.experiments_unique[(sorted_FN_APC[i][0][1]-1)%11],int((sorted_FN_APC[i][0][1]-1)/11)-2])
+                couplings_with_comparments.append([self.experiments_unique[(sorted_FN_APC[i][0][1]-1)%len(self.experiments_unique)],int((sorted_FN_APC[i][0][1]-1)/len(self.experiments_unique))-2])
 
         return couplings_with_comparments
 
