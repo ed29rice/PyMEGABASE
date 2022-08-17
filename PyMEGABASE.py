@@ -863,8 +863,8 @@ class PyMEGABASE_extended:
                 h_and_J = np.load(f, allow_pickle=True)
                 h_and_J = h_and_J.item()
             couplings = h_and_J['J_flat']
-            self.J==h_and_J['J']
-            L=self.J.shape[0]
+            self.J = h_and_J['J']
+            L = self.J.shape[0]
         else:
             couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
             L = self.plmdca_inst._get_num_and_len_of_seqs()[1]
