@@ -407,8 +407,6 @@ class PyMEGABASE:
         print('')
         print('{:^96s}'.format("****************************************************************************************"))
 
-
-
 class PyMEGABASE_extended:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types',
@@ -534,6 +532,7 @@ class PyMEGABASE_extended:
 
                 #Process signal and binning
                 signal=np.array(signal)
+                per=np.percentile(signal[signal!=None],95)
                 per=np.percentile(signal[signal!=None],95)
                 signal[signal==None]=0.0
                 signal[signal>per]=per
@@ -721,7 +720,90 @@ class PyMEGABASE_extended:
                 if e in exp_found.keys():
                     f.write(e.split('-hum')[0]+'\n')
                     print(e.split('-hum')[0])
-                    
+
+    def extra_track(self,experiment,bw_file):
+        if experiment in self.exp_found.keys():
+            print('This target has replicas already')
+            print('The new track will be addded as a different replica of the same target')
+            #Experiment directory
+            count=self.exp_found[experiment]+1
+            
+        else:
+            print('This target has no replicas')
+            print('The new track will be added a the first replica of the target')
+            #Experiment directory
+            count=1
+        exp_path=self.cell_line_path+'/'+experiment+'_'+str(count)
+        print(exp_path)
+        
+        try:
+            os.mkdir(exp_path)
+        except:
+            print('Directory ',exp_path,' already exist')
+
+        with open(exp_path+'/exp_name.txt', 'w') as f:
+            f.write(experiment+' '+experiment+'\n')
+
+        #Load data from track
+        
+        try:
+
+            bw = pyBigWig.open(bw_file)
+            for chr in range(1,23):
+                signal = bw.stats("chr"+str(chr), type="mean", nBins=self.chrm_size[chr-1])
+
+                #Process signal and binning
+                signal=np.array(signal)
+                per=np.percentile(signal[signal!=None],95)
+                signal[signal==None]=0.0
+                signal[signal>per]=per
+                signal=signal*19/per
+                signal=np.round(signal.astype(float)).astype(int)
+
+                #Save data
+                with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
+
+                    f.write("#chromosome file number of beads\n"+str(self.chrm_size[chr-1]))
+                    f.write("#\n")
+                    f.write("#bead, signal, discrete signal\n")
+                    for i in range(len(signal)):
+                        f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+            chr='X'
+            signal = bw.stats("chr"+chr, type="mean", nBins=self.chrm_size[-1])
+
+            #Process signal and binning
+            signal=np.array(signal)
+            per=np.percentile(signal[signal!=None],95)
+            signal[signal==None]=0.0
+            signal[signal>per]=per
+            signal=signal*19/per
+            signal=np.round(signal.astype(float)).astype(int)
+
+            #Save data
+            with open(exp_path+'/chr'+chr+'.track', 'w') as f:
+
+                f.write("#chromosome file number of beads\n"+str(self.chrm_size[-1]))
+                f.write("#\n")
+                f.write("#bead, signal, discrete signal\n")
+                for i in range(len(signal)):
+                    f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+
+            if experiment in self.exp_found.keys():
+                self.exp_found[experiment]=self.exp_found[experiment]+1
+
+            else:
+                self.exp_found[experiment]=1
+                self.successful_unique_exp=np.append(self.successful_unique_exp,experiment)
+                
+                with open(self.cell_line_path+'/unique_exp.txt', 'a') as f:
+                    f.write(experiment.split('-hum')[0]+'\n')
+                    self.unique.append(experiment)
+
+            return experiment
+        
+        except:
+            print('This experiment was incomplete:',experiment,'\nit will not be used.')
+
     def build_state_vector(self,int_types,all_averages):
         #Aggregate tracks by with data from other loci l-2, l-1, l, l+1, l+2
         #l+1
@@ -1756,12 +1838,11 @@ class PyMEGABASE_extra_tracks:
         print('')
         print('{:^96s}'.format("****************************************************************************************"))
 
-
 #TESTING NORMALIZATIONS
 class PyMEGABASE_extended_norm:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types',
-                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False):
+                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19):
         self.printHeader()
         self.cell_line=cell_line
         self.assembly=assembly
@@ -1770,6 +1851,7 @@ class PyMEGABASE_extended_norm:
             self.cell_line_path=cell_line+'_'+assembly
         else:
             self.cell_line_path=cell_line_path
+        self.n_states=n_states
         self.ref_cell_line='GM12878'
         self.ref_assembly='hg19'
         self.ref_cell_line_path=ref_cell_line_path
@@ -1870,7 +1952,7 @@ class PyMEGABASE_extended_norm:
                     signal[signal<per_min]=per_min
                     signal[signal>per]=per
                     signal=signal-per_min
-                    signal=signal*19/(per-per_min)
+                    signal=signal*self.n_states/(per-per_min)
                     signal=np.round(signal.astype(float)).astype(int)
     
                     #Save data
