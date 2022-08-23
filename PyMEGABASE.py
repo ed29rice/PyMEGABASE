@@ -1860,6 +1860,7 @@ class PyMEGABASE_extended_norm:
         self.atac=atac
         self.small_rna=small_rna
         self.total_rna=total_rna
+        self.n_states=n_states
 
         #Define tranlation dictinaries between aminoacids, intensity of Chip-seq signal and 
         self.RES_TO_INT = {
