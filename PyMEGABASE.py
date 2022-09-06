@@ -1970,11 +1970,11 @@ class PyMEGABASE_extended_norm:
                 signal = bw.stats("chr"+chr, type="mean", nBins=chrm_size[-1])
 
                 #Process signal and binning
-                signal=np.array(signal)
-                per=np.percentile(signal[signal!=None],95)
-                signal[signal==None]=0.0
+                signal[signal==None]=per_min
+                signal[signal<per_min]=per_min
                 signal[signal>per]=per
-                signal=signal*19/per
+                signal=signal-per_min
+                signal=signal*self.n_states/(per-per_min)
                 signal=np.round(signal.astype(float)).astype(int)
 
                 #Save data
