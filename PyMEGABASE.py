@@ -2441,7 +2441,10 @@ class PyMEGABASE_extended_norm:
 
     def test_set(self,chr=1,h_and_J_file=None):
         print('Test set for chromosome: ',chr)        
-        types=["A1" for i in range(self.chrm_size[chr-1])]
+        if chr!='X':
+            types=["A1" for i in range(self.chrm_size[chr-1])]
+        else:
+            types=["A1" for i in range(self.chrm_size[-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
         
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
