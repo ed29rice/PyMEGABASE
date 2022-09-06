@@ -1968,8 +1968,10 @@ class PyMEGABASE_extended_norm:
                             f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 chr='X'
                 signal = bw.stats("chr"+chr, type="mean", nBins=chrm_size[-1])
-
                 #Process signal and binning
+                signal=np.array(signal)
+                per=np.percentile(signal[signal!=None],95)
+                per_min=np.percentile(signal[signal!=None],5)
                 signal[signal==None]=per_min
                 signal[signal<per_min]=per_min
                 signal[signal>per]=per
