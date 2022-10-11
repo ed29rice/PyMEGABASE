@@ -2705,7 +2705,8 @@ class PyMEGABASE_organism:
             elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
                 experiments.append('minus-total-RNA-seq')          
 
-        self.experiments_unique=np.unique(experiments)   
+        self.experiments_unique=np.unique(experiments)
+        self.es_unique=[]   
         for e in self.experiments_unique:
             self.es_unique.append(e.split('-human')[0])
 
