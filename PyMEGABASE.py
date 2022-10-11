@@ -2855,15 +2855,15 @@ class PyMEGABASE_organism:
                                       for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
         self.successful_exp= [i for i in self.successful_exp if i]
         self.successful_unique_exp=np.unique(self.successful_exp)
-        su_unique=[]   
+        self.su_unique=[]   
         for e in self.successful_unique_exp:
-            su_unique.append(e.split('-'+self.organism)[0])
+            self.su_unique.append(e.split('-'+self.organism)[0])
         print('Experiments found in ENCODE for the selected cell line:')
         self.unique=[]
 
         with open(self.cell_line_path+'/unique_exp.txt', 'w') as f:
             for e in self.experiments_unique:
-                if e.split('-human')[0] in su_unique:
+                if e.split('-human')[0] in self.su_unique:
                     f.write(e.split('-human')[0]+'\n')
                     print(e.split('-human')[0])
                     self.unique.append(e)
@@ -2929,7 +2929,7 @@ class PyMEGABASE_organism:
                 text=line.split()[0]
                 exp=line.split()[1]
                 #Register if experiment is new
-                if (exp in self.successful_unique_exp) or (text in self.successful_unique_exp):
+                if (exp.split('-human')[0] in self.su_unique) or (text.split('-human')[0] in self.su_unique):
                     if exp!=exp_name:
                         try:
                             count=exp_found[exp]+1
