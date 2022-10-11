@@ -2706,11 +2706,13 @@ class PyMEGABASE_organism:
                 experiments.append('minus-total-RNA-seq')          
 
         self.experiments_unique=np.unique(experiments)   
+        for e in self.experiments_unique:
+            self.es_unique.append(e.split('-human')[0])
 
         print('Selected cell line to predict: '+self.cell_line)
         print('Selected assembly: '+self.assembly)
         print('Selected signal type: '+self.signal_type)
-
+        print('Selected organism: '+self.organism)
         
     def process_replica(self,line,cell_line_path,chrm_size):
         text=line.split()[0]
@@ -2720,7 +2722,7 @@ class PyMEGABASE_organism:
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
 
-        if exp in self.experiments_unique:
+        if exp.split('-'+self.organism)[0] in self.es_unique:
             try:
                 os.mkdir(exp_path)
             except:
