@@ -1841,7 +1841,6 @@ class PyMEGABASE_extra_tracks:
         print('')
         print('{:^96s}'.format("****************************************************************************************"))
 
-
 class PyMEGABASE_extended_norm:
     def __init__(self, cell_line='GM12878', assembly='hg19',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABSE/types',
@@ -2618,8 +2617,6 @@ class PyMEGABASE_extended_norm:
         print('')
         print('{:^96s}'.format("****************************************************************************************"))
 
-
-
 #TESTING ORGANISMS
 class PyMEGABASE_organism:
     def __init__(self, cell_line='GM12878', assembly='hg19',organism='human',signal_type='signal p-value',
@@ -2669,7 +2666,7 @@ class PyMEGABASE_organism:
         else:
             self.chrm_size = np.array(chromosome_sizes)/50000
         self.chrm_size=np.round(self.chrm_size+0.1).astype(int)
-        self.ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028])*50/self.res
+        self.ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,1028])*50/self.res
         self.ref_chrm_size=np.round(self.ref_chrm_size+0.1).astype(int)
 
         url='https://www.encodeproject.org/metadata/?type=Experiment&'
@@ -2723,7 +2720,9 @@ class PyMEGABASE_organism:
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
 
-        if exp.split('-'+self.organism)[0] in self.es_unique:
+        if 'human' in exp.split('-'): ext='human'
+        else: ext=self.organism
+        if exp.split('-'+ext)[0] in self.es_unique:
             try:
                 os.mkdir(exp_path)
             except:
@@ -2782,8 +2781,7 @@ class PyMEGABASE_organism:
 
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
-
-    
+ 
     def download_and_process_cell_line_data(self,nproc=10):
         
         try:
@@ -3069,8 +3067,7 @@ class PyMEGABASE_organism:
         all_averages=all_averages+1
 
         return all_averages
-
-                    
+              
     def training_set_up(self,chrms=None):
         if chrms==None:
             # We are training in odd chromosomes data
@@ -3124,8 +3121,7 @@ class PyMEGABASE_organism:
             for i in range(len(sequences.T)):
                 f.write('>'+str(i).zfill(4)+'\n')
                 f.write(''.join(sequences[:,i])+'\n')
-    
-    
+     
     def training(self,nproc=10,lambda_h=100,lambda_J=100):
         # Compute DCA scores using Pseudolikelihood maximization algorithm
         plmdca_inst = plmdca.PlmDCA(
@@ -3176,7 +3172,6 @@ class PyMEGABASE_organism:
         #Save fields and couplings 
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
-
 
     def get_couplings(self,h_and_J_file=None):
      
@@ -3271,8 +3266,7 @@ class PyMEGABASE_organism:
         all_averages=np.array(all_averages)
         chr_averages=self.build_state_vector(int_types,all_averages)-1
         return chr_averages[1:]+1
-
-        
+  
     def prediction(self,chr=1,h_and_J_file=None):
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
@@ -3324,12 +3318,15 @@ class PyMEGABASE_organism:
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
 
         #Add gaps from UCSC database
-        gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
-        chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
-        for gp in chr_gaps_ndx:
-            init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
-            end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            predict_type[init_loci:end_loci]=6
+        try: 
+            gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
+            for gp in chr_gaps_ndx:
+                init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
+                end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
+                predict_type[init_loci:end_loci]=6
+        except:
+            print('Gaps not found, not included in predictions')
                
         return predict_type
 
@@ -3367,7 +3364,7 @@ class PyMEGABASE_organism:
         
         #Prediction 
         predict_type=np.zeros(self.chr_averages.shape[1])
-        fails=0;r=0;
+        fails=0;r=0
         self.L=len(self.h)
         for loci in range(self.chr_averages.shape[1]):
             energy_val=[]
@@ -3384,12 +3381,15 @@ class PyMEGABASE_organism:
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
 
         #Add gaps from UCSC database
-        gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
-        chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
-        for gp in chr_gaps_ndx:
-            init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
-            end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
-            predict_type[init_loci:end_loci]=6
+        try:
+            gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
+            for gp in chr_gaps_ndx:
+                init_loci=np.round(gaps[gp,1].astype(float)/50000).astype(int)
+                end_loci=np.round(gaps[gp,2].astype(float)/50000).astype(int)
+                predict_type[init_loci:end_loci]=6
+        except:
+            print('Gaps not found, not included in predictions')
                
         return predict_type
 
