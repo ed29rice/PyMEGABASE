@@ -2732,7 +2732,7 @@ class PyMEGABASE_organism:
             #Load data from server
             try:
                 bw = pyBigWig.open("https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bigWig")
-                for chr in range(1,23):
+                for chr in range(1,len(chrm_size)):
                     signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
 
                     #Process signal and binning 
@@ -2975,7 +2975,7 @@ class PyMEGABASE_organism:
         try:
 
             bw = pyBigWig.open(bw_file)
-            for chr in range(1,23):
+            for chr in range(1,len(self.chrm_size)):
                 signal = bw.stats("chr"+str(chr), type="mean", nBins=self.chrm_size[chr-1])
 
                 #Process signal and binning
