@@ -3308,7 +3308,7 @@ class PyMEGABASE_organism:
         chr_averages=self.build_state_vector(int_types,all_averages)-1
         return chr_averages[1:]+1
   
-    def prediction(self,chr=1,h_and_J_file=None):
+    def prediction_single_chrom(self,chr=1,h_and_J_file=None):
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
@@ -3433,6 +3433,36 @@ class PyMEGABASE_organism:
             print('Gaps not found, not included in predictions')
                
         return predict_type
+
+    def prediction_all_chrm(self,path=None,subcompartments=True,compartments=True):
+        if path==None: path=self.cell_line_path+'/predictions'
+        print('Saving prediction in:',path)
+        #Define translation dictionaries between states and subcompartments
+        TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
+        INT_TO_TYPE = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
+        TYPE_TO_INT = {'A':0,'A':1,'B':2,'B':3,'B':4,'B':5,'NA':6}
+        INT_TO_TYPE_AB = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
+
+        os.system('mkdir '+path)
+        #Predict and save data for chromosomes 1 to 22
+        predictions_subcompartments={}
+        predictions_compartments={}
+        for chr in range(1,len(self.chrm_size)-1):
+            pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy')
+            types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
+            types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
+            #Save data
+            if subcompartments==True:
+                with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
+                    for i in range(len(types_pyME_sub)):
+                        f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
+            if compartments==True:
+                with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
+                    for i in range(len(types_pyME_AB)):
+                        f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
+            predictions_subcompartments[chr]=types_pyME_sub
+            predictions_compartments[chr]=types_pyME_AB
+        return predictions_subcompartments, predictions_compartments
 
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
