@@ -3434,7 +3434,7 @@ class PyMEGABASE_organism:
                
         return predict_type
 
-    def prediction_all_chrm(self,path=None,subcompartments=True,compartments=True):
+    def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True):
         if path==None: path=self.cell_line_path+'/predictions'
         print('Saving prediction in:',path)
         #Define translation dictionaries between states and subcompartments
@@ -3444,24 +3444,40 @@ class PyMEGABASE_organism:
         INT_TO_TYPE_AB = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
 
         os.system('mkdir '+path)
-        #Predict and save data for chromosomes 1 to 22
+        #Predict and save data for chromosomes
         predictions_subcompartments={}
         predictions_compartments={}
-        for chr in range(1,len(self.chrm_size)-1):
+        for chr in range(1,len(self.chrm_size)):
             pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy')
             types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
             types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
             #Save data
-            if subcompartments==True:
+            if save_subcompartments==True:
                 with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
                     for i in range(len(types_pyME_sub)):
                         f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
-            if compartments==True:
+            if save_compartments==True:
                 with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
                     for i in range(len(types_pyME_AB)):
                         f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
             predictions_subcompartments[chr]=types_pyME_sub
             predictions_compartments[chr]=types_pyME_AB
+
+        #Chromosome X
+        chr='X'
+        pred=self.prediction_X(h_and_J_file=self.cell_line_path+'/h_and_J.npy')
+        types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
+        types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
+        #Save data
+        if save_subcompartments==True:
+            with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
+                for i in range(len(types_pyME_sub)):
+                    f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
+        if save_compartments==True:
+            with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
+                for i in range(len(types_pyME_AB)):
+                    f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
+
         return predictions_subcompartments, predictions_compartments
 
     def printHeader(self):
