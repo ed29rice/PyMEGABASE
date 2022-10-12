@@ -3029,7 +3029,7 @@ class PyMEGABASE_organism:
             else:
                 self.exp_found[experiment]=1
                 self.successful_unique_exp=np.append(self.successful_unique_exp,experiment)
-                
+                self.su_unique.append(experiment.split('-'+self.organism)[0])
                 with open(self.cell_line_path+'/unique_exp.txt', 'a') as f:
                     f.write(experiment.split('-'+self.organism)[0]+'\n')
                     self.unique.append(experiment)
