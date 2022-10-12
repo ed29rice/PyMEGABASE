@@ -3111,7 +3111,7 @@ class PyMEGABASE_organism:
     def filter_exp(self):
         a=[]
         for i in range(1,3):
-            a.append(self.test_set(chr=i))
+            a.append(self.test_set(chr=i,silent=True))
         a=np.concatenate(a,axis=1)
 
         locus=2
@@ -3279,8 +3279,8 @@ class PyMEGABASE_organism:
 
         return couplings_with_comparments
 
-    def test_set(self,chr=1,h_and_J_file=None):
-        print('Test set for chromosome: ',chr)        
+    def test_set(self,chr=1,h_and_J_file=None,silent=False):
+        if silent==False:print('Test set for chromosome: ',chr)        
         if chr!='X':
             types=["A1" for i in range(self.chrm_size[chr-1])]
         else:
@@ -3299,7 +3299,7 @@ class PyMEGABASE_organism:
                     tmp=np.loadtxt(i+'/chr'+str(chr)+'.track',skiprows=3)[:,2]
                     reps.append(tmp)
                 except:
-                    print(i,' failed with at least one chromosome')
+                    if silent==False:print(i,' failed with at least one chromosome')
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
