@@ -3147,11 +3147,11 @@ class PyMEGABASE_organism:
                 chrms=[i for i in range(1,23)]
         
         if filter==True: 
-            all_averages=self.get_tmatrix(chrms,silent=False)
+            all_averages=self.get_tmatrix(chrms,silent=True)
             self.tmatrix=np.copy(all_averages)
             self.filter_exp()
 
-        all_averages=self.get_tmatrix(chrms,silent=True)
+        all_averages=self.get_tmatrix(chrms,silent=False)
         self.tmatrix=np.copy(all_averages)
         
         # Translate Potts states to sequences
