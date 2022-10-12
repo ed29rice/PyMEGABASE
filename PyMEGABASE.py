@@ -3067,15 +3067,9 @@ class PyMEGABASE_organism:
         all_averages=all_averages+1
 
         return all_averages
-              
-    def training_set_up(self,chrms=None):
-        if chrms==None:
-            # We are training in odd chromosomes data
-            if self.cell_line=='GM12878' and self.assembly=='hg19':
-                chrms=[1,3,5,7,9,11,13,15,17,19,21]
-            else:
-                chrms=[i for i in range(1,23)]
-        
+
+    def get_tmatrix(self,chrms,silent=False):
+       
         #Load types from Rao et al 2014 paper
         types=[]
         for chr in chrms:
@@ -3089,13 +3083,13 @@ class PyMEGABASE_organism:
         #Check which experiments are available to train 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         if unique.shape==(): unique=[unique]
-        print('To train the following experiments are used:')
+        if silent==False:print('To train the following experiments are used:')
 
         #Load each track and average over 
         all_averages=[]
         for u in unique:
             reps=[]
-            print(u)
+            if silent==False:print(u)
             for i in glob.glob(self.ref_cell_line_path+'/'+str(u)+'*'):
                 tmp=[]
                 try:
@@ -3105,14 +3099,61 @@ class PyMEGABASE_organism:
                     tmp=np.concatenate(tmp)
                     reps.append(tmp)
                 except:
-                    print(i,' failed with at least one chromosome')
+                    if silent==False:print(i,' failed with at least one chromosome')
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
 
         all_averages=np.array(all_averages)
         all_averages=self.build_state_vector(int_types,all_averages)
+        return all_averages
+
+    def filter_exp(self):
+        a=[]
+        for i in range(1,3):
+            a.append(self.test_set(chr=i))
+        a=np.concatenate(a,axis=1)
+
+        locus=2
+        good_exp=0
+        gexp=[]
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
+
+        for exper in range(len(unique)):
+            i=exper+len(unique)*locus
+            if (np.abs(np.mean(a[i])-np.mean(self.tmatrix[i+1]))<1) and (np.std(a[i])-np.std(self.tmatrix[i+1])<2):
+                good_exp=good_exp+1
+                gexp.append(unique[exper]+'\n')
+            else:
+                print('Not using '+unique[exper],' to predict')
+
+        #gexp=sample(gexp,8)
+        with open(self.cell_line_path+'/unique_exp_filtered.txt','w') as f:    
+            for i in gexp:
+                f.write(i)
+            print('Number of suitable experiments for prediction:',good_exp)
+        if good_exp>0:
+            os.system('mv '+self.cell_line_path+'/unique_exp.txt '+self.cell_line_path+'/unique_exp_bu.txt')
+            os.system('mv '+self.cell_line_path+'/unique_exp_filtered.txt '+self.cell_line_path+'/unique_exp.txt')
+        else:
+            print('There are no experiment suitable for the prediction')
+
+    def training_set_up(self,chrms=None,filter=True):
+        if chrms==None:
+            # We are training in odd chromosomes data
+            if self.cell_line=='GM12878' and self.assembly=='hg19':
+                chrms=[1,3,5,7,9,11,13,15,17,19,21]
+            else:
+                chrms=[i for i in range(1,23)]
+        
+        if filter==True: 
+            all_averages=self.get_tmatrix(self,chrms,silent=False)
+            self.tmatrix=np.copy(all_averages)
+            self.filter_exp()
+
+        all_averages=self.get_tmatrix(self,chrms,silent=True)
         self.tmatrix=np.copy(all_averages)
+        
         # Translate Potts states to sequences
         sequences=np.array(list(map(self.INT_TO_RES.get, all_averages.flatten()))).reshape(all_averages.shape)
 
