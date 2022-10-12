@@ -3440,8 +3440,7 @@ class PyMEGABASE_organism:
         #Define translation dictionaries between states and subcompartments
         TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
         INT_TO_TYPE = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
-        TYPE_TO_INT = {'A':0,'A':1,'B':2,'B':3,'B':4,'B':5,'NA':6}
-        INT_TO_TYPE_AB = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
+        INT_TO_TYPE_AB = {0:'A', 1:'A', 2:'B', 3:'B', 4:'B', 5:'B', 6:'NA'}
 
         os.system('mkdir '+path)
         #Predict and save data for chromosomes
