@@ -1719,7 +1719,7 @@ class PyMEGABASE_organism:
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
  
-    def download_and_process_cell_line_data(self,nproc=10):
+    def download_and_process_cell_line_data(self,nproc=10,all_exp=True):
         
         try:
             os.mkdir(self.cell_line_path)
@@ -1783,7 +1783,11 @@ class PyMEGABASE_organism:
                         count=1
                     exp_name=exp
                 self.exp_found[exp]=count
-                list_names.append(text+' '+exp+' '+str(count))
+                if all_exp==True:
+                    list_names.append(text+' '+exp+' '+str(count))
+                else:
+                    if count==1:
+                        list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
         self.successful_exp = Parallel(n_jobs=nproc)(delayed(self.process_replica)(list_names[i],self.cell_line_path,self.chrm_size) 
@@ -1807,7 +1811,7 @@ class PyMEGABASE_organism:
         else:
             print('This sample only has ',len(self.unique),' experiments. We do not recommend prediction on samples with less than 5 different experiments.')
                     
-    def download_and_process_ref_data(self,nproc):
+    def download_and_process_ref_data(self,nproc,all_exp=True):
         
         try:
             os.mkdir(self.ref_cell_line_path)
@@ -1872,7 +1876,11 @@ class PyMEGABASE_organism:
                             count=1
                         exp_name=exp
                     exp_found[exp]=count
+                if all_exp==True:
                     list_names.append(text+' '+exp+' '+str(count))
+                else:
+                    if count==1:
+                        list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
 
