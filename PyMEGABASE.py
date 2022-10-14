@@ -1888,7 +1888,9 @@ class PyMEGABASE_organism:
 
     def extra_track(self,experiment,bw_file):
         if not self.organism in experiment: experiment=experiment+'-'+self.organism
-        f not experiment.split('-'+self.organism)[0] in self.es_unique: 
+        if not experiment.split('-'+self.organism)[0] in self.es_unique: 
+            print('This experiment is not found in the training set, then cannot be used.')
+            return 0
         if experiment in self.exp_found.keys():
             print('This target has replicas already')
             print('The new track will be addded as a different replica of the same target')
