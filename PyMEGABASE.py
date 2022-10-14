@@ -1876,11 +1876,11 @@ class PyMEGABASE_organism:
                             count=1
                         exp_name=exp
                     exp_found[exp]=count
-                if all_exp==True:
-                    list_names.append(text+' '+exp+' '+str(count))
-                else:
-                    if count==1:
+                    if all_exp==True:
                         list_names.append(text+' '+exp+' '+str(count))
+                    else:
+                        if count==1:
+                            list_names.append(text+' '+exp+' '+str(count))
 
         print('Number of replicas:', len(list_names))
 
