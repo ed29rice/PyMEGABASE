@@ -1888,6 +1888,7 @@ class PyMEGABASE_organism:
 
     def extra_track(self,experiment,bw_file):
         if not self.organism in experiment: experiment=experiment+'-'+self.organism
+        f not experiment.split('-'+self.organism)[0] in self.es_unique: 
         if experiment in self.exp_found.keys():
             print('This target has replicas already')
             print('The new track will be addded as a different replica of the same target')
