@@ -8,6 +8,43 @@ from pydca.plmdca import plmdca
 
 
 class PyMEGABASE:
+    R"""
+    The :class:`~.PyMEGABASE` class performs genomic annotations .
+    
+    The :class:`~.PyMEGABASE` sets the environment to generate prediction of genomic annotations.
+    
+    Args:
+        cell_line (str, required): 
+            Name of target cell type
+        assembly (str, required): 
+            Reference assembly of target cell line ('hg19','GRCh38','mm10')
+        organism (str, required): 
+            Target cell type organism (str, required):
+        signal_type (str, required): 
+            Input files signal type ('signal p-value', 'fold change over control', ...)
+        ref_cell_line_path (str, optional): 
+            Folder/Path to place reference/training data ('tmp_meta')
+        cell_line_path (str, optional): 
+            Folder/Path to place target cell data 
+        types_path (str, optional): 
+            Folder/Path where the genomic annotations are located 
+        histones (bool, required): 
+            Whether to use Histone Modification data from the ENCODE databank for prediction
+        tf (bool, required): 
+            Whether to use Transcription Factor data from the ENCODE databank for prediction
+        small_rna (bool, required): 
+            Whether to use Small RNA-Seq data from the ENCODE databank for prediction
+        total_rna (bool, required): 
+            Whether to use Total RNA-seq data from the ENCODE databank for prediction
+        n_states (int, optional): 
+            Number of states for the D-nodes 
+        extra_filter (str, optional):
+            Add filter to the fetching data url to download cell type data
+        res (int, optional):
+            Resolution for genomic annotations calling in kilobasepairs (5, 50, 100)
+        chromosome_sizes (list, optional):
+            Chromosome sizes based on the reference genome assembly - required for non-human assemblies
+    """
     def __init__(self, cell_line='GM12878', assembly='hg19',organism='human',signal_type='signal p-value',
                  ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABASE/types',
                  histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
@@ -104,6 +141,17 @@ class PyMEGABASE:
         print('Selected organism: '+self.organism)
         
     def process_replica(self,line,cell_line_path,chrm_size):
+        R"""
+        Preprocess function for each replica 
+
+        Args: 
+            line (lsit, required):
+                Information about the replica: name, ENCODE id and replica id
+            cell_line_path (str, required):
+                Path to target cell type data
+            chrm_size (list, required):
+                Chromosome sizes based on the assembly
+        """
         text=line.split()[0]
         exp=line.split()[1]
         count=line.split()[2]
@@ -174,7 +222,15 @@ class PyMEGABASE:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
  
     def download_and_process_cell_line_data(self,nproc=10,all_exp=True):
-        
+        R"""
+        Download and preprocess target cell data for the D-nodes
+
+        Args: 
+            nproc (int, required):
+                Number of processors dedicated to download and process data
+            all_exp (bool, optional):
+                Download and process all replicas for each experiment
+        """
         try:
             os.mkdir(self.cell_line_path)
         except:
@@ -266,7 +322,15 @@ class PyMEGABASE:
             print('This sample only has ',len(self.unique),' experiments. We do not recommend prediction on samples with less than 5 different experiments.')
                     
     def download_and_process_ref_data(self,nproc,all_exp=True):
-        
+        R"""
+        Download and preprocess reference data for the D-nodes
+
+        Args: 
+            nproc (int, required):
+                Number of processors dedicated to download and process data
+            all_exp (bool, optional):
+                Download and process all replicas for each experiment
+        """
         try:
             os.mkdir(self.ref_cell_line_path)
         except:
@@ -349,6 +413,15 @@ class PyMEGABASE:
                     print(e.split('-'+self.organism)[0])
 
     def extra_track(self,experiment,bw_file):
+        R"""
+        Function to introduce custom tracks
+
+        Args: 
+            experiment (str, required):
+                Name of the experiment
+            bw_file (str, required):
+                Path to the custom track
+        """
         if not self.organism in experiment: experiment=experiment+'-'+self.organism
         if not experiment.split('-'+self.organism)[0] in self.es_unique: 
             print('This experiment is not found in the training set, then cannot be used.')
@@ -442,6 +515,15 @@ class PyMEGABASE:
             print('This experiment was incomplete:',experiment,'\nit will not be used.')
 
     def build_state_vector(self,int_types,all_averages):
+        R"""
+        Builds the set of state vectors used on the training process
+
+        Args: 
+            int_types (list, required):
+                Genomic annotations
+            all_averages (list, required):
+                D-node data 
+        """
         #Aggregate tracks by with data from other loci l-2, l-1, l, l+1, l+2
         #l+1
         shift1=np.copy(all_averages)
@@ -471,7 +553,15 @@ class PyMEGABASE:
         return all_averages
 
     def get_tmatrix(self,chrms,silent=False):
-       
+        R"""
+        Extract the training data
+
+        Args: 
+            chrms (list, optional):
+                Set of chromosomes from the reference data used as the training set
+            silent (bool, optional):
+                Silence outputs
+        """
         #Load types from Rao et al 2014 paper
         types=[]
         for chr in chrms:
@@ -520,6 +610,9 @@ class PyMEGABASE:
         return all_averages
 
     def filter_exp(self):
+        R"""
+        Performs baseline assestment on experiment baselines
+        """
         a=[]
         for i in range(1,3):
             a.append(self.test_set(chr=i,silent=True))
@@ -550,6 +643,15 @@ class PyMEGABASE:
             print('There are no experiment suitable for the prediction')
 
     def training_set_up(self,chrms=None,filter=True):
+        R"""
+        Formats data to allow the training
+
+        Args: 
+            chrms (list, optional):
+                Set of chromosomes from the reference data to use as the training set
+            filter (bool, optional):
+                Filter experiments based on the baseline
+        """
         if chrms==None:
             # We are training in odd chromosomes data
             if self.cell_line=='GM12878' and self.assembly=='hg19':
@@ -575,6 +677,21 @@ class PyMEGABASE:
                 f.write(''.join(sequences[:,i])+'\n')
      
     def training(self,nproc=10,lambda_h=100,lambda_J=100):
+        R"""
+        Performs the training of the Potts model based on the reference data
+
+        Args: 
+            nproc (int, required):
+                Number of processors used to train
+            lambda_h (bool, optional):
+                Value for the intensity of the regularization value for the h energy term
+            lambda_J (float, optional):
+                Value for the intensity of the regularization value for the J energy term
+        Returns:
+            array (size of chromosome,5*number of unique experiments)
+                D-node input data
+
+        """
         # Compute DCA scores using Pseudolikelihood maximization algorithm
         plmdca_inst = plmdca.PlmDCA(
             self.cell_line_path+"/sequences.fa",
@@ -625,72 +742,20 @@ class PyMEGABASE:
         with open(self.cell_line_path+'/h_and_J.npy', 'wb') as f:
             np.save(f, h_and_J)
 
-    def get_couplings(self,h_and_J_file=None):
-     
-        if h_and_J_file!=None:
-            with open(h_and_J_file, 'rb') as f:
-                h_and_J = np.load(f, allow_pickle=True)
-                h_and_J = h_and_J.item()
-            couplings = h_and_J['J_flat']
-            J = h_and_J['J']
-            L = J.shape[0]
-        else:
-            couplings = self.plmdca_inst.get_couplings_no_gap_state(self.fields_and_couplings)
-            L = self.plmdca_inst._get_num_and_len_of_seqs()[1]
+    def test_set(self,chr=1,silent=False):
+        R"""
+        Predicts and outputs the genomic annotations for chromosome X
 
-        self.experiments_unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
-        print(self.experiments_unique)
-        # Code from #ADD REF#
-        dca_scores_not_apc = list()
+        Args: 
+            chr (int, required):
+                Chromosome to extract input data fro the D-nodes
+            silent (bool, optional):
+                Avoid printing information 
+        Returns:
+            array (size of chromosome,5*number of unique experiments)
+                D-node input data
 
-        q = 21
-        qm1 = q - 1
-        for i in range(L-1):
-            for j in range(i + 1, L):
-                start_indx = int(((L *  (L - 1)/2) - (L - i) * ((L-i)-1)/2  + j  - i - 1) * qm1 * qm1)
-                end_indx = start_indx + qm1 * qm1
-                couplings_ij = couplings[start_indx:end_indx]
-                
-                couplings_ij = np.reshape(couplings_ij, (qm1,qm1))
-                avx = np.mean(couplings_ij, axis=1)
-                avx = np.reshape(avx, (qm1, 1))
-                avy = np.mean(couplings_ij, axis=0)
-                avy = np.reshape(avy, (1, qm1))
-                av = np.mean(couplings_ij)
-                couplings_ij = couplings_ij -  avx - avy + av
-                dca_score = np.sum(couplings_ij * couplings_ij)
-                dca_score = np.sqrt(dca_score)
-                data = ((i, j), dca_score)
-                dca_scores_not_apc.append(data)
-        dca_scores_not_apc = sorted(dca_scores_not_apc, key=lambda k : k[1], reverse=True)
-
-        av_score_sites = list()
-        N = L
-        scores_plmdca = dca_scores_not_apc
-        for i in range(N):
-            i_scores = [score for pair, score in scores_plmdca if i in pair]
-            assert len(i_scores) == N - 1
-            i_scores_sum = sum(i_scores)
-            i_scores_ave = i_scores_sum/float(N - 1)
-            av_score_sites.append(i_scores_ave)
-        # compute average product corrected DI
-        av_all_scores = sum(av_score_sites)/float(N)
-        sorted_FN_APC = list()
-        for pair, score in scores_plmdca:
-            i, j = pair
-            score_apc = score - av_score_sites[i] * (av_score_sites[j]/av_all_scores)
-            sorted_FN_APC.append((pair, score_apc))
-        # sort the scores as doing APC may have disrupted the ordering
-        sorted_FN_APC = sorted(sorted_FN_APC, key = lambda k : k[1], reverse=True)
-        # Map contact to experiement and position
-        couplings_with_comparments=[]
-        for i in range(len(sorted_FN_APC)):
-            if sorted_FN_APC[i][0][0]==0:
-                couplings_with_comparments.append([self.experiments_unique[(sorted_FN_APC[i][0][1]-1)%len(self.experiments_unique)],int((sorted_FN_APC[i][0][1]-1)/len(self.experiments_unique))-2])
-
-        return couplings_with_comparments
-
-    def test_set(self,chr=1,h_and_J_file=None,silent=False):
+        """
         if silent==False:print('Test set for chromosome: ',chr)        
         if chr!='X':
             types=["A1" for i in range(self.chrm_size[chr-1])]
@@ -720,6 +785,20 @@ class PyMEGABASE:
         return chr_averages[1:]+1
   
     def prediction_single_chrom(self,chr=1,h_and_J_file=None):
+        R"""
+        Predicts and outputs the genomic annotations for chromosome X
+
+        Args: 
+            chr (int, optional):
+                Chromosome to predict
+            h_and_J_file (str, optional):
+                Model energy term file path
+        
+        Returns:
+            array (size of chromosome)
+                Predicted annotations
+
+        """
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
@@ -783,6 +862,22 @@ class PyMEGABASE:
         return predict_type
 
     def prediction_X(self,chr='X',h_and_J_file=None):
+        R"""
+        Predicts and outputs the genomic annotations for chromosome X
+
+        Args: 
+            chr (int, optional):
+                Chromosome to predict
+            h_and_J_file (str, optional):
+                Model energy term file path
+        
+        Returns:
+            array (size of chromosome)
+                Predicted annotations
+
+        """
+
+
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
@@ -847,6 +942,22 @@ class PyMEGABASE:
         return predict_type
 
     def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True):
+        R"""
+        Predicts and outputs the genomic annotations for all the chromosomes
+
+        Args: 
+            path (str, optional):
+                Folder/Path to save the prediction results
+            save_subcompartments (bool, optional):
+                Whether generate files with subcompartment annotations for each chromosomes
+            save_compartments (bool, optional):
+                Whether generate files with compartment annotations for each chromosomes
+        
+        Returns:
+            predictions_subcompartments (dict), predictions_compartments (dict)
+                Predicted subcompartment annotations and compartment annotations on dictionaries organized by chromosomes
+
+        """
         if path==None: path=self.cell_line_path+'/predictions'
         print('Saving prediction in:',path)
         #Define translation dictionaries between states and subcompartments
@@ -898,12 +1009,10 @@ class PyMEGABASE:
         print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
         print('{:^96s}'.format("****************************************************************************************"))
         print('')
-        print('{:^96s}'.format("The PyMEGABASE class performs the prediction of subcompartment annotations"))
-        print('{:^96s}'.format("based on Chip-Seq data tracks of Histone modifications. The input data is "))
-        print('{:^96s}'.format("obtained from ENCODE data base. PyMEGABASE is the implementation of MEGABASE"))
-        print('{:^96s}'.format("method of prediction with BigWig Chip-Seq files."))
-        print('')
-        print('{:^96s}'.format("PyMEGABASE description is described in: TBD,"))
+        print('{:^96s}'.format("The PyMEGABASE class performs the prediction of genomic annotations"))
+        print('{:^96s}'.format("based on 1D data tracks of Chip-Seq and RNA-Seq. The input data is "))
+        print('{:^96s}'.format("obtained from ENCODE data base."))
+        print('{:^96s}'.format("PyMEGABASE description is described in: TBD"))
         print('')
         print('{:^96s}'.format("This package is the product of contributions from a number of people, including:"))
         print('{:^96s}'.format("Esteban Dodero-Rojas, Antonio Oliveira, Vinícius Contessoto,"))
