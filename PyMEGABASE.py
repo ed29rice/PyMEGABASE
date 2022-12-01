@@ -990,7 +990,7 @@ class PyMEGABASE:
                     all_data[chrom_index] = data
                 except:
                     print('Didnt found chrom:',chrom_index)
-
+            
             with open(out_file+ext+'.bed', 'w') as f:
                 header='# Experiments used for this prediction: '
                 for exp in exps:
@@ -1086,7 +1086,7 @@ class PyMEGABASE:
                 for i in range(len(types_pyME_AB)):
                     f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
 
-        write_bed(out_file=path+'/predictions', compartments=save_compartments,subcompartments=save_subcompartments)
+        self.write_bed(out_file=path+'/predictions', compartments=save_compartments,subcompartments=save_subcompartments)
 
         return predictions_subcompartments, predictions_compartments
 
