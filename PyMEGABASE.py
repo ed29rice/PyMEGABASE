@@ -940,68 +940,23 @@ class PyMEGABASE:
                
         return predict_type
 
-    def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True):
+    def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
         R"""
-        Predicts and outputs the genomic annotations for all the chromosomes
+        Formats and saves predictions on BED format
 
         Args: 
-            path (str, optional):
+            out_file (str, optional):
                 Folder/Path to save the prediction results
             save_subcompartments (bool, optional):
-                Whether generate files with subcompartment annotations for each chromosomes
+                Whether generate files with subcompartment annotations 
             save_compartments (bool, optional):
-                Whether generate files with compartment annotations for each chromosomes
+                Whether generate files with compartment annotations
         
         Returns:
             predictions_subcompartments (dict), predictions_compartments (dict)
                 Predicted subcompartment annotations and compartment annotations on dictionaries organized by chromosomes
 
         """
-        if path==None: path=self.cell_line_path+'/predictions'
-        print('Saving prediction in:',path)
-        #Define translation dictionaries between states and subcompartments
-        TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
-        INT_TO_TYPE = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
-        INT_TO_TYPE_AB = {0:'A', 1:'A', 2:'B', 3:'B', 4:'B', 5:'B', 6:'NA'}
-
-        os.system('mkdir '+path)
-        #Predict and save data for chromosomes
-        predictions_subcompartments={}
-        predictions_compartments={}
-        for chr in range(1,len(self.chrm_size)):
-            pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy')
-            types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
-            types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
-            #Save data
-            if save_subcompartments==True:
-                with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
-                    for i in range(len(types_pyME_sub)):
-                        f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
-            if save_compartments==True:
-                with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
-                    for i in range(len(types_pyME_AB)):
-                        f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
-            predictions_subcompartments[chr]=types_pyME_sub
-            predictions_compartments[chr]=types_pyME_AB
-
-        #Chromosome X
-        chr='X'
-        pred=self.prediction_X(h_and_J_file=self.cell_line_path+'/h_and_J.npy')
-        types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
-        types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
-        #Save data
-        if save_subcompartments==True:
-            with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
-                for i in range(len(types_pyME_sub)):
-                    f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
-        if save_compartments==True:
-            with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
-                for i in range(len(types_pyME_AB)):
-                    f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
-
-        return predictions_subcompartments, predictions_compartments
-
-    def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
         def get_color(s_id):
             return info[s_id][1]
 
@@ -1071,6 +1026,69 @@ class PyMEGABASE:
         if subcompartments==True:
            save_bed('s')
 
+    def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True):
+        R"""
+        Predicts and outputs the genomic annotations for all the chromosomes
+
+        Args: 
+            path (str, optional):
+                Folder/Path to save the prediction results
+            save_subcompartments (bool, optional):
+                Whether generate files with subcompartment annotations for each chromosomes
+            save_compartments (bool, optional):
+                Whether generate files with compartment annotations for each chromosomes
+        
+        Returns:
+            predictions_subcompartments (dict), predictions_compartments (dict)
+                Predicted subcompartment annotations and compartment annotations on dictionaries organized by chromosomes
+
+        """
+        if path==None: path=self.cell_line_path+'/predictions'
+        print('Saving prediction in:',path)
+        #Define translation dictionaries between states and subcompartments
+        TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
+        INT_TO_TYPE = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
+        INT_TO_TYPE_AB = {0:'A', 1:'A', 2:'B', 3:'B', 4:'B', 5:'B', 6:'NA'}
+
+        os.system('mkdir '+path)
+        #Predict and save data for chromosomes
+        predictions_subcompartments={}
+        predictions_compartments={}
+        for chr in range(1,len(self.chrm_size)):
+            pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy')
+            types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
+            types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
+            #Save data
+            if save_subcompartments==True:
+                with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
+                    for i in range(len(types_pyME_sub)):
+                        f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
+            if save_compartments==True:
+                with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
+                    for i in range(len(types_pyME_AB)):
+                        f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
+            predictions_subcompartments[chr]=types_pyME_sub
+            predictions_compartments[chr]=types_pyME_AB
+
+        #Chromosome X
+        chr='X'
+        pred=self.prediction_X(h_and_J_file=self.cell_line_path+'/h_and_J.npy')
+        types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
+        types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
+        #Save data
+        if save_subcompartments==True:
+            with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
+                for i in range(len(types_pyME_sub)):
+                    f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
+                    
+        if save_compartments==True:
+            with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
+                for i in range(len(types_pyME_AB)):
+                    f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
+
+        write_bed(out_file=path+'/predictions', compartments=save_compartments,subcompartments=save_subcompartments)
+
+        return predictions_subcompartments, predictions_compartments
 
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
