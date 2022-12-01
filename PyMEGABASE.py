@@ -579,7 +579,6 @@ class PyMEGABASE:
 
         types=np.concatenate(types)
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
-        print(np.sum(int_types==None))
 
         #Check which experiments are available to train 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
