@@ -1001,6 +1001,77 @@ class PyMEGABASE:
 
         return predictions_subcompartments, predictions_compartments
 
+    def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
+        def get_color(s_id):
+            return info[s_id][1]
+
+        def get_num(s_id):
+            return str(info[s_id][0])
+
+        def get_bed_file_line(chromosome, position, c_id):
+            return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
+                position * resolution) + "\t" + c_id + "\t" + get_num(c_id) + "\t.\t" + str(
+                (position - 1) * resolution) + "\t" + str(
+                position * resolution) + "\t " + get_color(c_id)
+        
+        def save_bed(type):
+            folder=self.cell_line_path+'/predictions'
+            if type=='c':
+                ext='_compartments'
+            else:
+                ext='_subcompartments'
+            all_data = {}
+            for chrom_index in range(1,len(self.chrm_size)):
+                try:
+                    filename = folder + '/chr' + str(chrom_index) + ext + '.txt'
+                    data = []
+                    with open(filename) as file:
+                        for line in file:
+                            items = line.split()
+                            if len(items) == 2:
+                                data.append((int(items[0]), items[1]))
+                            else:
+                                print(line)
+                    all_data[chrom_index] = data
+                except:
+                    print('Didnt found chrom:',chrom_index)
+
+            with open(out_file+ext+'.bed', 'w') as f:
+                header='# Experiments used for this prediction: '
+                for exp in exps:
+                    header=header+exp+' '
+                f.write(header+'\n')
+                for chrom_index in range(1,len(self.chrm_size)):
+                    try:
+                        for (pos, sID) in all_data[chrom_index]:
+                            f.write(get_bed_file_line(chrom_index, pos, sID) + '\n')
+                    except:
+                        pass            
+
+        unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
+        for u in unique:
+            os.system('cat '+self.cell_line_path+'/'+u+'*/exp_name.txt | awk \'{print $1}\' >> '+self.cell_line_path+'/exps_used.dat')
+        exps=np.loadtxt(self.cell_line_path+'/exps_used.dat',dtype=str)
+
+        resolution=self.res
+        info = {
+            "NA": (0, "255,255,255"),
+            "A1": (2, "245,47,47"),
+            "A2": (1, "145,47,47"),
+            "B1": (-1, "47,187,224"),
+            "B2": (-2, "47,47,224"),
+            "B3": (-3, "47,47,139"),
+            "B4": (-4, "75,0,130"),
+            "A": (1, "245,47,47"),
+            "B": (-1, "47,187,224"),
+        }
+        if compartments==True:
+            save_bed('c')
+
+        if subcompartments==True:
+           save_bed('s')
+
+
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
         print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
