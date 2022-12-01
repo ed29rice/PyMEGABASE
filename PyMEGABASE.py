@@ -1053,7 +1053,7 @@ class PyMEGABASE:
             os.system('cat '+self.cell_line_path+'/'+u+'*/exp_name.txt | awk \'{print $1}\' >> '+self.cell_line_path+'/exps_used.dat')
         exps=np.loadtxt(self.cell_line_path+'/exps_used.dat',dtype=str)
 
-        resolution=self.res
+        resolution=self.res*1000
         info = {
             "NA": (0, "255,255,255"),
             "A1": (2, "245,47,47"),
