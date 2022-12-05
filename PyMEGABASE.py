@@ -12,8 +12,6 @@ except ImportError as e:
     from pydca.plmdca import plmdca
     pass  # module doesn't exist, deal with it.
 
-
-
 class PyMEGABASE:
     R"""
     The :class:`~.PyMEGABASE` class performs genomic annotations .
