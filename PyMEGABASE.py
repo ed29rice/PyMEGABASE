@@ -4,9 +4,14 @@ import numpy as np
 import sys, os, time, glob, random, requests, shutil
 from tqdm import tqdm
 from joblib import Parallel, delayed
-pydca_path=os.path.abspath('./PyMEGABASE/3rd_party_software/pydca-master')
-sys.path.insert(0,pydca_path)
-from plmdca import plmdca
+try:
+    from pydca.plmdca import plmdca
+except ImportError as e:
+    print('Could not find pydca, it will download the package now')
+    os.system('pip install -q pydca --no-deps')
+    from pydca.plmdca import plmdca
+    pass  # module doesn't exist, deal with it.
+
 
 
 class PyMEGABASE:
