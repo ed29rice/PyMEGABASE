@@ -4,7 +4,9 @@ import numpy as np
 import sys, os, time, glob, random, requests, shutil
 from tqdm import tqdm
 from joblib import Parallel, delayed
-from 3rd_party_software.pydca-master.pydca.plmdca import plmdca
+pydca_path=os.path.abspath('./PyMEGABASE/3rd_party_software/pydca-master')
+sys.path.insert(0,pydca_path)
+from plmdca import plmdca
 
 
 class PyMEGABASE:
