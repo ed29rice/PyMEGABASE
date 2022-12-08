@@ -7,7 +7,7 @@ PyMEGABASE
 |Update|
 |GitHub-Stars|
 
-.. |Citing OpenMiChroM| image:: https://img.shields.io/badge/cite-OpenMiChroM-informational
+.. |Citing PyMEGABASE| image:: https://img.shields.io/badge/cite-OpenMiChroM-informational
    :target: https://open-michrom.readthedocs.io/en/latest/Reference/citing.html
 .. |NDB| image:: https://img.shields.io/badge/NDB-Nucleome%20Data%20Bank-informational
    :target: https://ndb.rice.edu/
