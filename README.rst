@@ -29,7 +29,7 @@ Resources
 Citation
 ========
 
-When using **OpenMiChroM** to perform structural annotations, please use cite this refeerence: TBD.
+TBD.
 
 
 Installation
