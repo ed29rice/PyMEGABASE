@@ -1,27 +1,27 @@
-PyMEGABASE/share/gaps/GRCh38.txt
-PyMEGABASE/share/gaps/GRCh38_gaps.txt
-PyMEGABASE/share/gaps/hg19.txt
-PyMEGABASE/share/gaps/hg19_gaps.txt
-PyMEGABASE/share/gaps/mm10_gaps.txt
-PyMEGABASE/share/types/chr1_beads.txt.original
-PyMEGABASE/share/types/chr2_beads.txt.original
-PyMEGABASE/share/types/chr3_beads.txt.original
-PyMEGABASE/share/types/chr4_beads.txt.original
-PyMEGABASE/share/types/chr5_beads.txt.original
-PyMEGABASE/share/types/chr6_beads.txt.original
-PyMEGABASE/share/types/chr7_beads.txt.original
-PyMEGABASE/share/types/chr8_beads.txt.original
-PyMEGABASE/share/types/chr9_beads.txt.original
-PyMEGABASE/share/types/chr10_beads.txt.original
-PyMEGABASE/share/types/chr11_beads.txt.original
-PyMEGABASE/share/types/chr12_beads.txt.original
-PyMEGABASE/share/types/chr13_beads.txt.original
-PyMEGABASE/share/types/chr14_beads.txt.original
-PyMEGABASE/share/types/chr15_beads.txt.original
-PyMEGABASE/share/types/chr16_beads.txt.original
-PyMEGABASE/share/types/chr17_beads.txt.original
-PyMEGABASE/share/types/chr18_beads.txt.original
-PyMEGABASE/share/types/chr19_beads.txt.original
-PyMEGABASE/share/types/chr20_beads.txt.original
-PyMEGABASE/share/types/chr21_beads.txt.original
-PyMEGABASE/share/types/chr22_beads.txt.original
+include PyMEGABASE/share/gaps/GRCh38.txt
+include PyMEGABASE/share/gaps/GRCh38_gaps.txt
+include PyMEGABASE/share/gaps/hg19.txt
+include PyMEGABASE/share/gaps/hg19_gaps.txt
+include PyMEGABASE/share/gaps/mm10_gaps.txt
+include PyMEGABASE/share/types/chr1_beads.txt.original
+include PyMEGABASE/share/types/chr2_beads.txt.original
+include PyMEGABASE/share/types/chr3_beads.txt.original
+include PyMEGABASE/share/types/chr4_beads.txt.original
+include PyMEGABASE/share/types/chr5_beads.txt.original
+include PyMEGABASE/share/types/chr6_beads.txt.original
+include PyMEGABASE/share/types/chr7_beads.txt.original
+include PyMEGABASE/share/types/chr8_beads.txt.original
+include PyMEGABASE/share/types/chr9_beads.txt.original
+include PyMEGABASE/share/types/chr10_beads.txt.original
+include PyMEGABASE/share/types/chr11_beads.txt.original
+include PyMEGABASE/share/types/chr12_beads.txt.original
+include PyMEGABASE/share/types/chr13_beads.txt.original
+include PyMEGABASE/share/types/chr14_beads.txt.original
+include PyMEGABASE/share/types/chr15_beads.txt.original
+include PyMEGABASE/share/types/chr16_beads.txt.original
+include PyMEGABASE/share/types/chr17_beads.txt.original
+include PyMEGABASE/share/types/chr18_beads.txt.original
+include PyMEGABASE/share/types/chr19_beads.txt.original
+include PyMEGABASE/share/types/chr20_beads.txt.original
+include PyMEGABASE/share/types/chr21_beads.txt.original
+include PyMEGABASE/share/types/chr22_beads.txt.original
