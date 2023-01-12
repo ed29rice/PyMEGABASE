@@ -31,7 +31,7 @@ setup(
     ],
     include_package_data=True,
     packages=find_packages(),
-    install_requires=['numpy', 'glob', 'requests', 'shutil', 'pyBigWig', 'urllib','gzip','tqdm','joblib','pydca'],
+    install_requires=['numpy', 'glob2>=0.7', 'requests', 'pytest-shutil>=1.7.0', 'pyBigWig>=0.3.18', 'urllib3>=1.26.14','tqdm>=4.64.1','joblib>=1.2.0','pydca>=1.23','ipywidgets>=8.0.4'],
     entry_points={"console_scripts": ["CLINAME=PyMEGABASE._cli:main"]},
     zip_safe=True,
     long_description=long_description,
