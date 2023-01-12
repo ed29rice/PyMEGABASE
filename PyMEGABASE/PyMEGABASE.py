@@ -1154,10 +1154,12 @@ class PyMEGABASE:
             File format for the input data
     """
     def __init__(self, cell_line='GM12878', assembly='hg19',organism='human',signal_type='signal p-value',file_format='bigWig',
-                 ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABASE/types',
+                 ref_cell_line_path='tmp_meta',cell_line_path=None,types_path=None,
                  histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
                  extra_filter='',res=50,chromosome_sizes=None,AB=False):
         self.printHeader()
+        pt = os.path.dirname(os.path.realpath(__file__))
+        path_to_share = os.path.join(pt,'share/')
         self.cell_line=cell_line
         self.assembly=assembly
         self.signal_type=signal_type
@@ -1168,7 +1170,10 @@ class PyMEGABASE:
         self.ref_cell_line='GM12878'
         self.ref_assembly='hg19'
         self.ref_cell_line_path=ref_cell_line_path
-        self.types_path=types_path
+        if types_path==None:
+            self.types_path=types_path
+        else:
+            types_path=path_to_share+'types'
         self.hist=histones
         self.tf=tf
         self.atac=atac
@@ -1180,7 +1185,6 @@ class PyMEGABASE:
         self.organism=organism.lower()
         if file_format.lower()=='bigwig':self.file_format='bigWig'
         elif file_format.lower()=='bed': self.file_format='bed+narrowPeak'
-
 
         #Define tranlation dictinaries between aminoacids, intensity of Chip-seq signal and 
         self.RES_TO_INT = {
@@ -2217,7 +2221,7 @@ class PyMEGABASE:
 
         #Add gaps from UCSC database
         try: 
-            gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            gaps=np.loadtxt(path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
             chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
             for gp in chr_gaps_ndx:
                 init_loci=np.round(gaps[gp,1].astype(float)/(self.res*1000)).astype(int)
@@ -2297,7 +2301,7 @@ class PyMEGABASE:
         #Add gaps from UCSC database
         try:
             print('Resolution:', self.res)
-            gaps=np.loadtxt('PyMEGABASE/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            gaps=np.loadtxt(path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
             chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
             for gp in chr_gaps_ndx:
                 init_loci=np.round(gaps[gp,1].astype(float)/self.res*1000).astype(int)
