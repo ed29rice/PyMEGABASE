@@ -1173,7 +1173,7 @@ class PyMEGABASE:
         if types_path==None:
             self.types_path=types_path
         else:
-            types_path=path_to_share+'types'
+            self.types_path=path_to_share+'types'
         self.hist=histones
         self.tf=tf
         self.atac=atac
