@@ -1159,7 +1159,7 @@ class PyMEGABASE:
                  extra_filter='',res=50,chromosome_sizes=None,AB=False):
         self.printHeader()
         pt = os.path.dirname(os.path.realpath(__file__))
-        path_to_share = os.path.join(pt,'share/')
+        self.path_to_share = os.path.join(pt,'share/')
         self.cell_line=cell_line
         self.assembly=assembly
         self.signal_type=signal_type
@@ -1173,7 +1173,7 @@ class PyMEGABASE:
         if types_path==None:
             self.types_path=types_path
         else:
-            self.types_path=path_to_share+'types'
+            self.types_path=self.path_to_share+'types'
         self.hist=histones
         self.tf=tf
         self.atac=atac
@@ -2221,7 +2221,7 @@ class PyMEGABASE:
 
         #Add gaps from UCSC database
         try: 
-            gaps=np.loadtxt(path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            gaps=np.loadtxt(self.path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
             chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
             for gp in chr_gaps_ndx:
                 init_loci=np.round(gaps[gp,1].astype(float)/(self.res*1000)).astype(int)
@@ -2301,7 +2301,7 @@ class PyMEGABASE:
         #Add gaps from UCSC database
         try:
             print('Resolution:', self.res)
-            gaps=np.loadtxt(path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
+            gaps=np.loadtxt(self.path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
             chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
             for gp in chr_gaps_ndx:
                 init_loci=np.round(gaps[gp,1].astype(float)/self.res*1000).astype(int)
