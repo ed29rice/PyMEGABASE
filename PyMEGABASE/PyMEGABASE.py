@@ -1170,7 +1170,7 @@ class PyMEGABASE:
         self.ref_cell_line='GM12878'
         self.ref_assembly='hg19'
         self.ref_cell_line_path=ref_cell_line_path
-        if types_path==None:
+        if types_path!=None:
             self.types_path=types_path
         else:
             self.types_path=self.path_to_share+'types'
