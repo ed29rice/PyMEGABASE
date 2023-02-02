@@ -2155,7 +2155,7 @@ class PyMEGABASE:
         chr_averages=self.build_state_vector(int_types,all_averages)-1
         return chr_averages[1:]+1
   
-    def prediction_single_chrom(self,chr=1,h_and_J_file=None):
+    def prediction_single_chrom(self,chr=1,h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
 
@@ -2205,6 +2205,8 @@ class PyMEGABASE:
         predict_type=np.zeros(self.chr_averages.shape[1])
         fails=0;r=0;
         self.L=len(self.h)
+        enes=[]
+        probs=[]
         for loci in range(self.chr_averages.shape[1]):
             energy_val=[]
             energy=0
@@ -2216,9 +2218,12 @@ class PyMEGABASE:
                     tmp_energy=tmp_energy-self.J[0,j,state,s2]
                 energy_val.append(energy+tmp_energy)
             energy_val=np.array(energy_val)
+            enes.append(energy_val)
+            probs.append(np.exp(-energy_val)/np.sum(np.exp(-energy_val)))
             #Select the state with the lowest energy
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
-
+        enes=np.array(enes)
+        probs=np.array(probs)
         #Add gaps from UCSC database
         try: 
             gaps=np.loadtxt(self.path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
@@ -2227,10 +2232,20 @@ class PyMEGABASE:
                 init_loci=np.round(gaps[gp,1].astype(float)/(self.res*1000)).astype(int)
                 end_loci=np.round(gaps[gp,2].astype(float)/(self.res*1000)).astype(int)
                 predict_type[init_loci:end_loci]=6
+                enes[init_loci:end_loci]=0
+                probs[init_loci:end_loci]=0
         except:
             print('Gaps not found, not included in predictions')
-               
-        return predict_type
+        if energies==True:
+            if probabilities==True:
+                return predict_type, energies, probs
+            else:
+                return predict_type, energies
+        else:
+            if probabilities==True:
+                return predict_type, probs
+            else:
+                return predict_type
 
     def prediction_X(self,chr='X',h_and_J_file=None):
         R"""
