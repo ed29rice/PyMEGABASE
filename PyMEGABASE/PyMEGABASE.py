@@ -2299,6 +2299,8 @@ class PyMEGABASE:
         predict_type=np.zeros(self.chr_averages.shape[1])
         fails=0;r=0
         self.L=len(self.h)
+        enes=[]
+        probs=[]
         for loci in range(self.chr_averages.shape[1]):
             energy_val=[]
             energy=0
@@ -2466,6 +2468,7 @@ class PyMEGABASE:
                 else:
                     pred, enes=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=True,probabilities=False)
                     energies_chr[chr]=enes
+            else:
                 if probabilities==True:
                     pred, probs=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=False,probabilities=True)
                     probabilities_chr[chr]=probs
