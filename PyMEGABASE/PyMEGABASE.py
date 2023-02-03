@@ -2238,16 +2238,16 @@ class PyMEGABASE:
             print('Gaps not found, not included in predictions')
         if energies==True:
             if probabilities==True:
-                return predict_type, energies, probs
+                return predict_type, enes, probs
             else:
-                return predict_type, energies
+                return predict_type, enes
         else:
             if probabilities==True:
                 return predict_type, probs
             else:
                 return predict_type
 
-    def prediction_X(self,chr='X',h_and_J_file=None):
+    def prediction_X(self,chr='X',h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
 
@@ -2310,9 +2310,12 @@ class PyMEGABASE:
                     tmp_energy=tmp_energy-self.J[0,j,state,s2]
                 energy_val.append(energy+tmp_energy)
             energy_val=np.array(energy_val)
+            enes.append(energy_val)
+            probs.append(np.exp(-energy_val)/np.sum(np.exp(-energy_val)))
             #Select the state with the lowest energy
             predict_type[loci]=np.where(energy_val==np.min(energy_val))[0][0]
-
+        enes=np.array(enes)
+        probs=np.array(probs)
         #Add gaps from UCSC database
         try:
             print('Resolution:', self.res)
@@ -2322,10 +2325,21 @@ class PyMEGABASE:
                 init_loci=np.round(gaps[gp,1].astype(float)/self.res*1000).astype(int)
                 end_loci=np.round(gaps[gp,2].astype(float)/self.res*1000).astype(int)
                 predict_type[init_loci:end_loci]=6
+                enes[init_loci:end_loci]=0
+                probs[init_loci:end_loci]=0
         except:
             print('Gaps not found, not included in predictions')
-               
-        return predict_type
+        
+        if energies==True:
+            if probabilities==True:
+                return predict_type, enes, probs
+            else:
+                return predict_type, enes
+        else:
+            if probabilities==True:
+                return predict_type, probs
+            else:
+                return predict_type
 
     def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
         R"""
@@ -2413,7 +2427,7 @@ class PyMEGABASE:
         if subcompartments==True:
            save_bed('s')
 
-    def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True):
+    def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for all the chromosomes
 
@@ -2441,8 +2455,22 @@ class PyMEGABASE:
         #Predict and save data for chromosomes
         predictions_subcompartments={}
         predictions_compartments={}
+        energies_chr={}
+        probabilities_chr={}
         for chr in range(1,len(self.chrm_size)):
-            pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy')
+            if energies==True:
+                if probabilities==True:
+                    pred, enes, probs=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=True,probabilities=True)
+                    energies_chr[chr]=enes
+                    probabilities_chr[chr]=probs
+                else:
+                    pred, enes=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=True,probabilities=False)
+                    energies_chr[chr]=enes
+                if probabilities==True:
+                    pred, probs=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=False,probabilities=True)
+                    probabilities_chr[chr]=probs
+                else:
+                    pred=self.prediction_single_chrom(chr,h_and_J_file=self.cell_line_path+'/h_and_J.npy',energies=False,probabilities=False)
             types_pyME_sub=np.array(list(map(INT_TO_TYPE.get, pred)))
             types_pyME_AB=np.array(list(map(INT_TO_TYPE_AB.get, pred)))
             #Save data
@@ -2474,8 +2502,17 @@ class PyMEGABASE:
                     f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
 
         self.write_bed(out_file=path+'/predictions', compartments=save_compartments,subcompartments=save_subcompartments)
-
-        return predictions_subcompartments, predictions_compartments
+        if energies==True:
+            if probabilities==True:
+                return predictions_subcompartments, predictions_compartments, energies_chr, probabilities_chr
+            else:
+                return predictions_subcompartments, predictions_compartments, energies_chr
+        else:
+            if probabilities==True:
+                return predictions_subcompartments, predictions_compartments, probabilities_chr
+            else:
+                return predictions_subcompartments, predictions_compartments
+        
 
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
