@@ -2295,7 +2295,7 @@ class PyMEGABASE:
             for i in glob.glob(self.cell_line_path+'/'+str(u)+'*'):
                 tmp=[]
                 try:
-                    tmp=np.loadtxt(i+'/chr'+str(chr)+'.track',skiprows=3)[:,2]
+                    tmp=np.loadtxt(i+'/chrX.track',skiprows=3)[:,2]
                     reps.append(tmp)
                 except:
                     print(i,' failed with at least one chromosome')
@@ -2335,8 +2335,8 @@ class PyMEGABASE:
             gaps=np.loadtxt(self.path_to_share+'/gaps/'+self.assembly+'_gaps.txt',dtype=str)
             chr_gaps_ndx=np.where((gaps[:,0]=='chr'+str(chr)))[0]
             for gp in chr_gaps_ndx:
-                init_loci=np.round(gaps[gp,1].astype(float)/self.res*1000).astype(int)
-                end_loci=np.round(gaps[gp,2].astype(float)/self.res*1000).astype(int)
+                init_loci=np.round(gaps[gp,1].astype(float)/(self.res*1000)).astype(int)
+                end_loci=np.round(gaps[gp,2].astype(float)/(self.res*1000)).astype(int)
                 predict_type[init_loci:end_loci]=6
                 enes[init_loci:end_loci]=0
                 probs[init_loci:end_loci]=0
@@ -2412,7 +2412,20 @@ class PyMEGABASE:
                     all_data[chrom_index] = data
                 except:
                     print('Didnt found chrom:',chrom_index)
-            
+            try:
+                filename = folder + '/chrX' + ext + '.txt'
+                data = []
+                with open(filename) as file:
+                    for line in file:
+                        items = line.split()
+                        if len(items) == 2:
+                            data.append((int(items[0]), items[1]))
+                        else:
+                            print(line)
+                all_data['X'] = data
+            except:
+                print('Didnt found chrom X:',chrom_index)
+                
             with open(out_file+ext+'.bed', 'w') as f:
                 header='# Experiments used for this prediction: '
                 for exp in exps:
@@ -2424,10 +2437,14 @@ class PyMEGABASE:
                             f.write(get_bed_file_line(chrom_index, pos, sID) + '\n')
                     except:
                         pass            
-
+                try:  
+                    for (pos, sID) in all_data['X']:
+                            f.write(get_bed_file_line('X', pos, sID) + '\n')       
+                except:
+                    pass
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         for u in unique:
-            os.system('cat '+self.cell_line_path+'/'+u+'*/exp_accession.txt | awk \'{print $1}\' >> '+self.cell_line_path+'/exps_used.dat')
+            os.system('cat '+self.cell_line_path+'/'+u+'*/exp_accession.txt | awk \'{print $1}\'  | sort | uniq >> '+self.cell_line_path+'/exps_used.dat')
         exps=np.loadtxt(self.cell_line_path+'/exps_used.dat',dtype=str)
 
         resolution=self.res*1000
