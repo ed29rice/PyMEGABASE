@@ -2425,7 +2425,7 @@ class PyMEGABASE:
                 all_data['X'] = data
             except:
                 print('Didnt found chrom X:',chrom_index)
-                
+
             with open(out_file+ext+'.bed', 'w') as f:
                 header='# Experiments used for this prediction: '
                 for exp in exps:
@@ -2450,20 +2450,20 @@ class PyMEGABASE:
         resolution=self.res*1000
         info = {
             "NA": (0, "255,255,255"),
-            "A1": (2, "245,47,47"),
-            "A2": (1, "145,47,47"),
-            "B1": (-1, "47,187,224"),
-            "B2": (-2, "47,47,224"),
-            "B3": (-3, "47,47,139"),
-            "B4": (-4, "75,0,130"),
+            "A1": (1, "245,47,47"),
+            "A2": (2, "145,47,47"),
+            "B1": (3, "47,187,224"),
+            "B2": (4, "47,47,224"),
+            "B3": (5, "47,47,139"),
+            "B4": (6, "75,0,130"),
             "A": (1, "245,47,47"),
-            "B": (-1, "47,187,224"),
+            "B": (2, "47,187,224"),
         }
         if compartments==True:
             save_bed('c')
 
         if subcompartments==True:
-           save_bed('s')
+            save_bed('s')
 
     def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True,energies=False,probabilities=False):
         R"""
