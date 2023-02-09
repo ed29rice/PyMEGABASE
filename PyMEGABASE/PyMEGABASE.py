@@ -2378,7 +2378,7 @@ class PyMEGABASE:
             return str(info[s_id][0])
 
         def get_bed_file_line(chromosome, position, c_id):
-            if self.chrom_l['chr'+str(chromosome)]<position*resolution:
+            if self.chrom_l['chr'+str(chromosome)]>position*resolution:
                 return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
                     position * resolution) + "\t" + c_id + "\t" + get_num(c_id) + "\t.\t" + str(
                     (position - 1) * resolution) + "\t" + str(
