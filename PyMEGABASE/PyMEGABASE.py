@@ -1154,9 +1154,9 @@ class PyMEGABASE:
             File format for the input data
     """
     def __init__(self, cell_line='GM12878', assembly='hg19',organism='human',signal_type='signal p-value',file_format='bigWig',
-                 ref_cell_line_path='tmp_meta',cell_line_path=None,types_path=None,
-                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
-                 extra_filter='',res=50,chromosome_sizes=None,AB=False):
+                ref_cell_line_path='tmp_meta',cell_line_path=None,types_path=None,
+                histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
+                extra_filter='',res=50,chromosome_sizes=None,AB=False):
         self.printHeader()
         pt = os.path.dirname(os.path.realpath(__file__))
         self.path_to_share = os.path.join(pt,'share/')
@@ -1202,12 +1202,15 @@ class PyMEGABASE:
         
         if assembly=='GRCh38':
             self.chrm_size = np.array([4980,4844,3966,3805,3631,3417,3187,2903,2768,2676,2702,2666,2288,2141,2040,1807,1666,1608,1173,1289,935,1017,3121])*50/self.res
+            self.chrom_l={'chr1':248956422,'chr2':242193529,'chr3':198295559,'chr4':190214555,'chr5':181538259,'chr6':170805979,'chr7':159345973,'chrX':156040895,'chr8':145138636,'chr9':138394717,'chr11':135086622,'chr10':133797422,'chr12':133275309,'chr13':114364328,'chr14':107043718,'chr15':101991189,'chr16':90338345,'chr17':83257441,'chr18':80373285,'chr20':64444167,'chr19':58617616,'chrY':	57227415,'chr22':50818468,'chr21':46709983}
         elif assembly=='hg19':
             self.chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,3105])*50/self.res
+            self.chrom_l={'chr1':249250621,'chr2':243199373,'chr3':198022430,'chr4':191154276,'chr5':180915260,'chr6':171115067,'chr7':159138663,'chrX':155270560,'chr8':146364022,'chr9':141213431,'chr10':135534747,'chr11':135006516,'chr12':133851895,'chr13':115169878,'chr14':107349540,'chr15':102531392,'chr16':90354753,'chr17':81195210,'chr18':78077248,'chr20':63025520,'chrY':59373566,'chr19':59128983,'chr22':51304566,'chr21':48129895}
         else:
             if chromosome_sizes == None: 
                 raise ValueError("Need to specify chromosome sizes for assembly: {}".format(assembly))
             self.chrm_size = np.array(chromosome_sizes)/(self.res*1000)
+            self.chrom_l = np.array(chromosome_sizes)
         self.chrm_size=np.round(self.chrm_size+0.1).astype(int)
         self.ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,1028])*50/self.res
         self.ref_chrm_size=np.round(self.ref_chrm_size+0.1).astype(int)
@@ -1254,7 +1257,7 @@ class PyMEGABASE:
         print('Selected assembly: '+self.assembly)
         print('Selected signal type: '+self.signal_type)
         print('Selected organism: '+self.organism)
-        
+
     def process_replica_bw(self,line,cell_line_path,chrm_size):
         R"""
         Preprocess function for each replica formated in bigwig files
@@ -1270,6 +1273,7 @@ class PyMEGABASE:
         text=line.split()[0]
         exp=line.split()[1]
         count=line.split()[2]
+        sr_number=line.split()[3]
 
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
@@ -1284,6 +1288,8 @@ class PyMEGABASE:
 
             with open(exp_path+'/exp_name.txt', 'w') as f:
                 f.write(text+' '+exp+'\n')
+            with open(exp_path+'/exp_accession.txt', 'w') as f:
+                f.write(sr_number+' '+exp+'\n')
                 
             #Load data from server
             try:
@@ -1351,6 +1357,7 @@ class PyMEGABASE:
         text=line.split()[0]
         exp=line.split()[1]
         count=line.split()[2]
+        sr_number=line.split()[3]
 
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
@@ -1365,7 +1372,8 @@ class PyMEGABASE:
 
             with open(exp_path+'/exp_name.txt', 'w') as f:
                 f.write(text+' '+exp+'\n')
-                
+            with open(exp_path+'/exp_accession.txt', 'w') as f:
+                f.write(sr_number+' '+exp+'\n')
             #Load data from server
             try:
                 exp_url="https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bed.gz"
@@ -1444,7 +1452,7 @@ class PyMEGABASE:
 
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
- 
+
     def download_and_process_cell_line_data(self,nproc=10,all_exp=True):
         R"""
         Download and preprocess target cell data for the D-nodes
@@ -1483,19 +1491,19 @@ class PyMEGABASE:
             for k in content.split('\\n')[:-1]:
                 l=k.split('\\t')
                 if l[5]==self.assembly and l[4]==self.signal_type and l[7]=='Histone ChIP-seq':
-                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]==self.signal_type and l[7]=='ATAC-seq':
-                    f.write(l[0]+' '+l[7]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[7]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]==self.signal_type and l[7]=='TF ChIP-seq':
-                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]=='plus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]=='plus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]=='minus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
        
         count=0
         self.exp_found={}
@@ -1508,6 +1516,7 @@ class PyMEGABASE:
                 count += 1
                 text=line.split()[0]
                 exp=line.split()[1]
+                sr_number=line.split()[-1]
 
                 #Register if experiment is new
                 if exp!=exp_name:
@@ -1518,10 +1527,10 @@ class PyMEGABASE:
                     exp_name=exp
                 self.exp_found[exp]=count
                 if all_exp==True:
-                    list_names.append(text+' '+exp+' '+str(count))
+                    list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
                 else:
                     if count==1:
-                        list_names.append(text+' '+exp+' '+str(count))
+                        list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
 
         print('Number of replicas:', len(list_names))
         if self.file_format=='bigWig':
@@ -1548,7 +1557,7 @@ class PyMEGABASE:
             print('Predictions would use: ',len(self.unique),' experiments')
         else:
             print('This sample only has ',len(self.unique),' experiments. We do not recommend prediction on samples with less than 5 different experiments.')
-                    
+
     def download_and_process_ref_data(self,nproc,all_exp=True):
         R"""
         Download and preprocess reference data for the D-nodes
@@ -1587,20 +1596,20 @@ class PyMEGABASE:
             for k in content.split('\\n')[:-1]:
                 l=k.split('\\t')
                 if l[5]==self.ref_assembly and l[4]==self.signal_type and l[7]=='Histone ChIP-seq':
-                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]==self.signal_type and l[7]=='ATAC-seq':
-                    f.write(l[0]+' '+l[7]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[7]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]==self.signal_type and l[7]=='TF ChIP-seq':
-                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+l[22]+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='plus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'plus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='small RNA-seq':
-                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
+                    f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
-                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+'\n')
-         
+                    f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
+        
         ref_chrm_size = self.ref_chrm_size
         count=0
         exp_found={}
@@ -1613,6 +1622,8 @@ class PyMEGABASE:
                 count += 1
                 text=line.split()[0]
                 exp=line.split()[1]
+                sr_number=line.split()[-1]
+
                 #Register if experiment is new
                 if (exp.split('-human')[0] in self.su_unique) or (text.split('-human')[0] in self.su_unique):
                     if exp!=exp_name:
@@ -1623,10 +1634,10 @@ class PyMEGABASE:
                         exp_name=exp
                     exp_found[exp]=count
                     if all_exp==True:
-                        list_names.append(text+' '+exp+' '+str(count))
+                        list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
                     else:
                         if count==1:
-                            list_names.append(text+' '+exp+' '+str(count))
+                            list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
 
         print('Number of replicas:', len(list_names))
 
@@ -2046,7 +2057,7 @@ class PyMEGABASE:
             for i in range(len(sequences.T)):
                 f.write('>'+str(i).zfill(4)+'\n')
                 f.write(''.join(sequences[:,i])+'\n')
-     
+
     def training(self,nproc=10,lambda_h=100,lambda_J=100):
         R"""
         Performs the training of the Potts model based on the reference data
@@ -2154,7 +2165,7 @@ class PyMEGABASE:
         all_averages=np.array(all_averages)
         chr_averages=self.build_state_vector(int_types,all_averages)-1
         return chr_averages[1:]+1
-  
+
     def prediction_single_chrom(self,chr=1,h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
@@ -2367,11 +2378,19 @@ class PyMEGABASE:
             return str(info[s_id][0])
 
         def get_bed_file_line(chromosome, position, c_id):
-            return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
-                position * resolution) + "\t" + c_id + "\t" + get_num(c_id) + "\t.\t" + str(
-                (position - 1) * resolution) + "\t" + str(
-                position * resolution) + "\t " + get_color(c_id)
-        
+            if self.chrom_l['chr'+str(chromosome)]<position*resolution:
+                return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
+                    position * resolution) + "\t" + c_id + "\t" + get_num(c_id) + "\t.\t" + str(
+                    (position - 1) * resolution) + "\t" + str(
+                    position * resolution) + "\t " + get_color(c_id)
+            else:
+                if self.chrom_l['chr'+str(chromosome)]>(position-1)*resolution:
+                    return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
+                        self.chrom_l['chr'+str(chromosome)]) + "\t" + c_id + "\t" + get_num(c_id) + "\t.\t" + str(
+                        (position - 1) * resolution) + "\t" + str(
+                        self.chrom_l['chr'+str(chromosome)]) + "\t " + get_color(c_id)
+                else:
+                    return ''
         def save_bed(type):
             folder=self.cell_line_path+'/predictions'
             if type=='c':
@@ -2408,7 +2427,7 @@ class PyMEGABASE:
 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         for u in unique:
-            os.system('cat '+self.cell_line_path+'/'+u+'*/exp_name.txt | awk \'{print $1}\' >> '+self.cell_line_path+'/exps_used.dat')
+            os.system('cat '+self.cell_line_path+'/'+u+'*/exp_accession.txt | awk \'{print $1}\' >> '+self.cell_line_path+'/exps_used.dat')
         exps=np.loadtxt(self.cell_line_path+'/exps_used.dat',dtype=str)
 
         resolution=self.res*1000
