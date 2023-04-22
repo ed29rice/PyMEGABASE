@@ -22,7 +22,7 @@ PyMEGABASE (PYMB) is Python library for calling subcompartment annotations based
 
 Resources
 =========
-`Tutorial prediction of human and mouse cell types: <https://colab.research.google.com/drive/1U5ZNTg8A6tMNsIyHJV7zDFSUThisTH3F?authuser=2#scrollTo=cA1uVC_X2c7r&uniqifier=3>`
+`Tutorial prediction of human and mouse cell types: <https://colab.research.google.com/drive/1U5ZNTg8A6tMNsIyHJV7zDFSUThisTH3F?usp=sharing>`
 
 
 
