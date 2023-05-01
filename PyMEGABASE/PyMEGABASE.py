@@ -1186,27 +1186,26 @@ class PyMEGABASE:
         if file_format.lower()=='bigwig':self.file_format='bigWig'
         elif file_format.lower()=='bed': self.file_format='bed+narrowPeak'
 
-        #Define tranlation dictinaries between aminoacids, intensity of Chip-seq signal and 
+        #Define translation dictinaries between aminoacids, intensity of Chip-seq signal/RNASeq count and states of the model
         self.RES_TO_INT = {
                 'A': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5,
                 'G': 6, 'H': 7, 'I': 8, 'K': 9, 'L': 10,
                 'M': 11, 'N': 12, 'P': 13, 'Q': 14, 'R': 15,
                 'S': 16, 'T': 17, 'V': 18, 'W':19, 'Y':20,
-                '-':21, '.':21, '~':21,
-        }
+                '-':21, '.':21, '~':21,}
         self.INT_TO_RES = {self.RES_TO_INT[k]:k for k in self.RES_TO_INT.keys()}
 
         self.TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
 
         self.INT_TO_TYPE = {self.TYPE_TO_INT[k]:k for k in self.TYPE_TO_INT.keys()}
-        
+        # Define assembly of the target cell
         if assembly=='GRCh38':
             self.chrm_size = np.array([4980,4844,3966,3805,3631,3417,3187,2903,2768,2676,2702,2666,2288,2141,2040,1807,1666,1608,1173,1289,935,1017,3121])*50/self.res
             self.chrom_l={'chr1':248956422,'chr2':242193529,'chr3':198295559,'chr4':190214555,'chr5':181538259,'chr6':170805979,'chr7':159345973,'chrX':156040895,'chr8':145138636,'chr9':138394717,'chr11':135086622,'chr10':133797422,'chr12':133275309,'chr13':114364328,'chr14':107043718,'chr15':101991189,'chr16':90338345,'chr17':83257441,'chr18':80373285,'chr20':64444167,'chr19':58617616,'chrY':	57227415,'chr22':50818468,'chr21':46709983}
         elif assembly=='hg19':
             self.chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,3105])*50/self.res
             self.chrom_l={'chr1':249250621,'chr2':243199373,'chr3':198022430,'chr4':191154276,'chr5':180915260,'chr6':171115067,'chr7':159138663,'chrX':155270560,'chr8':146364022,'chr9':141213431,'chr10':135534747,'chr11':135006516,'chr12':133851895,'chr13':115169878,'chr14':107349540,'chr15':102531392,'chr16':90354753,'chr17':81195210,'chr18':78077248,'chr20':63025520,'chrY':59373566,'chr19':59128983,'chr22':51304566,'chr21':48129895}
-        else:
+        else: # If not GRCh38 or hg19 the chromosome sizes are required
             if chromosome_sizes == None: 
                 raise ValueError("Need to specify chromosome sizes for assembly: {}".format(assembly))
             self.chrm_size = np.array(chromosome_sizes)/(self.res*1000)
@@ -1215,6 +1214,8 @@ class PyMEGABASE:
         self.ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,1028])*50/self.res
         self.ref_chrm_size=np.round(self.ref_chrm_size+0.1).astype(int)
 
+        #Retrieves the available experiments on GM12878-hg19 to assess the download of experiments on the target cell
+        #Prepare url to request information
         url='https://www.encodeproject.org/metadata/?type=Experiment&'
         if self.hist==True:
             url=url+'assay_title=Histone+ChIP-seq'
@@ -1227,8 +1228,9 @@ class PyMEGABASE:
         if self.total_rna==True:
             url=url+'&assay_title=total+RNA-seq'
         self.url_ref=url+'&biosample_ontology.term_name='+self.ref_cell_line+'&files.file_type='+self.file_format
-
+        #Request information
         r = requests.get(self.url_ref)
+        #Decode information requested
         content=str(r.content)
         experiments=[]
         for k in content.split('\\n')[:-1]:
@@ -1247,12 +1249,13 @@ class PyMEGABASE:
                 experiments.append('minus-small-RNA-seq')
             elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
                 experiments.append('minus-total-RNA-seq')          
-
+        #Extract set of experiments found on GM12878-hg19 
         self.experiments_unique=np.unique(experiments)
         self.es_unique=[]   
         for e in self.experiments_unique:
             self.es_unique.append(e.split('-human')[0])
 
+        #Summary of input 
         print('Selected cell line to predict: '+self.cell_line)
         print('Selected assembly: '+self.assembly)
         print('Selected signal type: '+self.signal_type)
@@ -1263,21 +1266,24 @@ class PyMEGABASE:
         Preprocess function for each replica formated in bigwig files
 
         Args: 
-            line (lsit, required):
+            line (list, required):
                 Information about the replica: name, ENCODE id and replica id
             cell_line_path (str, required):
                 Path to target cell type data
             chrm_size (list, required):
                 Chromosome sizes based on the assembly
         """
+        #Extract experiment id
         text=line.split()[0]
+        #Extract experiment type
         exp=line.split()[1]
+        #Extract number id of experiment
         count=line.split()[2]
+        #Extract accession number (ENCODE)
         sr_number=line.split()[3]
-
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
-
+        #Generate bookeeping files
         if 'human' in exp.split('-'): ext='human'
         else: ext=self.organism
         if exp.split('-'+ext)[0] in self.es_unique:
@@ -1294,6 +1300,7 @@ class PyMEGABASE:
             #Load data from server
             try:
                 bw = pyBigWig.open("https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bigWig")
+                #Process replica for numbered chromosomes
                 for chr in range(1,len(chrm_size)):
                     signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
 
@@ -1308,14 +1315,14 @@ class PyMEGABASE:
                     signal=signal*self.n_states/(per-per_min)
                     signal=np.round(signal.astype(float)).astype(int)
 
-                    #Save data
+                    #Save data for each chromosome
                     with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
-
                         f.write("#chromosome file number of beads\n"+str(chrm_size[chr-1]))
                         f.write("#\n")
                         f.write("#bead, signal, discrete signal\n")
                         for i in range(len(signal)):
                             f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
+                #Process seperatly chromosome X 
                 chr='X'
                 signal = bw.stats("chr"+chr, type="mean", nBins=chrm_size[-1])
                 #Process signal and binning
@@ -1331,7 +1338,6 @@ class PyMEGABASE:
 
                 #Save data
                 with open(exp_path+'/chr'+chr+'.track', 'w') as f:
-
                     f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
                     f.write("#\n")
                     f.write("#bead, signal, discrete signal\n")
@@ -1354,14 +1360,18 @@ class PyMEGABASE:
             chrm_size (list, required):
                 Chromosome sizes based on the assembly
         """
+        #Extract experiment id
         text=line.split()[0]
+        #Extract experiment type
         exp=line.split()[1]
+        #Extract number id of experiment
         count=line.split()[2]
+        #Extract accession number (ENCODE)
         sr_number=line.split()[3]
-
+        
         #Experiment directory 
         exp_path=cell_line_path+'/'+exp+'_'+str(count)
-
+        #Generate bookeeping files
         if 'human' in exp.split('-'): ext='human'
         else: ext=self.organism
         if exp.split('-'+ext)[0] in self.es_unique:
@@ -1376,12 +1386,14 @@ class PyMEGABASE:
                 f.write(sr_number+' '+exp+'\n')
             #Load data from server
             try:
+                #Extract data from bed files
                 exp_url="https://www.encodeproject.org/files/"+text+"/@@download/"+text+".bed.gz"
                 response = urllib.request.urlopen(exp_url)
                 gunzip_response = gzip.GzipFile(fileobj=response)
                 content = gunzip_response.read()
                 data=np.array([i.split('\t') for i in content.decode().split('\n')[:-1]])
 
+                #Process replica for numbered chromosomes
                 for chr in range(1,len(chrm_size)):
                     chrm_data=data[data[:,0]=='chr'+str(chr)][:,[1,2,6]].astype(float)
                     signal=np.zeros(chrm_size[chr-1])
@@ -1415,7 +1427,7 @@ class PyMEGABASE:
                         f.write("#bead, signal, discrete signal\n")
                         for i in range(len(signal)):
                             f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
-
+                #Process seperatly chromosome X
                 chr='X'
                 chrm_data=data[data[:,0]=='chr'+chr][:,[1,2,6]].astype(float)
                 signal=np.zeros(chrm_size[-1])
