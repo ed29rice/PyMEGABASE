@@ -10,15 +10,10 @@ Table of Contents
    
 .. toctree::
    :maxdepth: 2
-   :caption: PyMEGABASE Modules
-
-   PyMEGABASE
-
-.. toctree::
-   :maxdepth: 2
    :caption: Tutorials
 
-   Tutorials/Tutorial_PyMEGABASE
+   Tutorials/Prediction_of_human_cells
+   Tutorials/Prediction_of_mouse_cells
    
 .. toctree::
    :maxdepth: 2
