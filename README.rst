@@ -37,7 +37,7 @@ Installation
 
 The **PyMEGABASE** library can be installed via pip.
 
-- pip install -i https://test.pypi.org/pypi/ --extra-index-url https://pypi.org/simple PyMEGABASE==1.0.12
+- pip install -i https://test.pypi.org/pypi/ --extra-index-url https://pypi.org/simple PyMEGABASE==1.0.13
 
 You may need to install pyBigWig (pip install pyBigWig) before installing PyMEGABASE
 
