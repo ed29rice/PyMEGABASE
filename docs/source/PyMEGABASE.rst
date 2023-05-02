@@ -1,10 +1,10 @@
 PyMEGABASE
 ==================
 
-PyMEGABASE.PyMEGABASE
+PyMEGABASE
 ----------------------------
 
-.. automodule:: PyMEGABASE.PyMEGABASE.PyMEGABASE
+.. automodule:: PyMEGABASE
    :members:
    :undoc-members:
    :show-inheritance:

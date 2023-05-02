@@ -9,7 +9,7 @@ Table of Contents
    GettingStarted/intro
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: PyMEGABASE Modules
 
    PyMEGABASE

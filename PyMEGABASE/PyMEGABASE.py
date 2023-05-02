@@ -1,3 +1,10 @@
+# Copyright (c) 2020-2022 The Center for Theoretical Biological Physics (CTBP) - Rice University
+# This file is from the Open-MiChroM project, released under the MIT License. 
+
+R"""  
+The :class:`~.PyMEGABASE` classes perform subcompartment and compartment annotations based on 1D chromatin enrichment profiles.
+"""
+
 import os, glob, requests, shutil, pyBigWig, urllib, gzip
 import numpy as np
 from tqdm import tqdm
