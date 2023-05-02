@@ -9,7 +9,7 @@ except ImportError as e:
     print('Could not find pydca, it will download the package now')
     os.system('pip install -q pydca --no-deps')
     from pydca.plmdca import plmdca
-    pass  # module doesn't exist, deal with it.
+    pass  
 
 class PyMEGABASE_legacy:
     R"""
@@ -50,9 +50,9 @@ class PyMEGABASE_legacy:
             Chromosome sizes based on the reference genome assembly - required for non-human assemblies
     """
     def __init__(self, cell_line='GM12878', assembly='hg19',organism='human',signal_type='signal p-value',
-                 ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABASE/types',
-                 histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
-                 extra_filter='',res=50,chromosome_sizes=None,AB=False):
+                ref_cell_line_path='tmp_meta',cell_line_path=None,types_path='PyMEGABASE/types',
+                histones=True,tf=False,atac=False,small_rna=False,total_rna=False,n_states=19,
+                extra_filter='',res=50,chromosome_sizes=None,AB=False):
         self.printHeader()
         self.cell_line=cell_line
         self.assembly=assembly
@@ -1185,7 +1185,6 @@ class PyMEGABASE:
         self.organism=organism.lower()
         if file_format.lower()=='bigwig':self.file_format='bigWig'
         elif file_format.lower()=='bed': self.file_format='bed+narrowPeak'
-
         #Define translation dictinaries between aminoacids, intensity of Chip-seq signal/RNASeq count and states of the model
         self.RES_TO_INT = {
                 'A': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5,
@@ -1194,9 +1193,7 @@ class PyMEGABASE:
                 'S': 16, 'T': 17, 'V': 18, 'W':19, 'Y':20,
                 '-':21, '.':21, '~':21,}
         self.INT_TO_RES = {self.RES_TO_INT[k]:k for k in self.RES_TO_INT.keys()}
-
         self.TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
-
         self.INT_TO_TYPE = {self.TYPE_TO_INT[k]:k for k in self.TYPE_TO_INT.keys()}
         # Define assembly of the target cell
         if assembly=='GRCh38':
@@ -1213,7 +1210,6 @@ class PyMEGABASE:
         self.chrm_size=np.round(self.chrm_size+0.1).astype(int)
         self.ref_chrm_size = np.array([4990,4865,3964,3828,3620,3424,3184,2931,2826,2712,2703,2679,2307,2148,2052,1810,1626,1564,1184,1262,964,1028,1028])*50/self.res
         self.ref_chrm_size=np.round(self.ref_chrm_size+0.1).astype(int)
-
         #Retrieves the available experiments on GM12878-hg19 to assess the download of experiments on the target cell
         #Prepare url to request information
         url='https://www.encodeproject.org/metadata/?type=Experiment&'
@@ -1254,7 +1250,6 @@ class PyMEGABASE:
         self.es_unique=[]   
         for e in self.experiments_unique:
             self.es_unique.append(e.split('-human')[0])
-
         #Summary of input 
         print('Selected cell line to predict: '+self.cell_line)
         print('Selected assembly: '+self.assembly)
@@ -1263,8 +1258,7 @@ class PyMEGABASE:
 
     def process_replica_bw(self,line,cell_line_path,chrm_size):
         R"""
-        Preprocess function for each replica formated in bigwig files
-
+        Preprocess function for each replica formated in bigwig file
         Args: 
             line (list, required):
                 Information about the replica: name, ENCODE id and replica id
@@ -1291,7 +1285,6 @@ class PyMEGABASE:
                 os.mkdir(exp_path)
             except:
                 print('Directory ',exp_path,' already exist')
-
             with open(exp_path+'/exp_name.txt', 'w') as f:
                 f.write(text+' '+exp+'\n')
             with open(exp_path+'/exp_accession.txt', 'w') as f:
@@ -1303,7 +1296,6 @@ class PyMEGABASE:
                 #Process replica for numbered chromosomes
                 for chr in range(1,len(chrm_size)):
                     signal = bw.stats("chr"+str(chr), type="mean", nBins=chrm_size[chr-1])
-
                     #Process signal and binning 
                     signal=np.array(signal)
                     per=np.percentile(signal[signal!=None],95)
@@ -1314,7 +1306,6 @@ class PyMEGABASE:
                     signal=signal-per_min
                     signal=signal*self.n_states/(per-per_min)
                     signal=np.round(signal.astype(float)).astype(int)
-
                     #Save data for each chromosome
                     with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
                         f.write("#chromosome file number of beads\n"+str(chrm_size[chr-1]))
@@ -1335,7 +1326,6 @@ class PyMEGABASE:
                 signal=signal-per_min
                 signal=signal*self.n_states/(per-per_min)
                 signal=np.round(signal.astype(float)).astype(int)
-
                 #Save data
                 with open(exp_path+'/chr'+chr+'.track', 'w') as f:
                     f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
@@ -1344,14 +1334,12 @@ class PyMEGABASE:
                     for i in range(len(signal)):
                         f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 return exp
-
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
 
     def process_replica_bed(self,line,cell_line_path,chrm_size):
         R"""
         Preprocess function for each replica formated in bed files
-
         Args: 
             line (lsit, required):
                 Information about the replica: name, ENCODE id and replica id
@@ -1379,7 +1367,6 @@ class PyMEGABASE:
                 os.mkdir(exp_path)
             except:
                 print('Directory ',exp_path,' already exist')
-
             with open(exp_path+'/exp_name.txt', 'w') as f:
                 f.write(text+' '+exp+'\n')
             with open(exp_path+'/exp_accession.txt', 'w') as f:
@@ -1392,7 +1379,6 @@ class PyMEGABASE:
                 gunzip_response = gzip.GzipFile(fileobj=response)
                 content = gunzip_response.read()
                 data=np.array([i.split('\t') for i in content.decode().split('\n')[:-1]])
-
                 #Process replica for numbered chromosomes
                 for chr in range(1,len(chrm_size)):
                     chrm_data=data[data[:,0]=='chr'+str(chr)][:,[1,2,6]].astype(float)
@@ -1410,7 +1396,7 @@ class PyMEGABASE:
                             p=(ndx2-ll[0]/(self.res*1000))/((ll[1]-ll[0])/(self.res*1000))
                             signal[ndx1]+=ll[2]*p
                             signal[ndx2]+=ll[2]*(1-p)
-
+                    
                     per=np.percentile(signal[signal!=None],95)
                     per_min=np.percentile(signal[signal!=None],5)
                     signal[signal==None]=per_min
@@ -1421,7 +1407,7 @@ class PyMEGABASE:
                     signal=np.round(signal.astype(float)).astype(int)
                     #Save data
                     with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
-
+                        
                         f.write("#chromosome file number of beads\n"+str(chrm_size[chr-1]))
                         f.write("#\n")
                         f.write("#bead, signal, discrete signal\n")
@@ -1454,14 +1440,13 @@ class PyMEGABASE:
                 signal=np.round(signal.astype(float)).astype(int)
                 #Save data
                 with open(exp_path+'/chr'+chr+'.track', 'w') as f:
-
                     f.write("#chromosome file number of beads\n"+str(chrm_size[-1]))
                     f.write("#\n")
                     f.write("#bead, signal, discrete signal\n")
                     for i in range(len(signal)):
                         f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
                 return exp
-
+            
             except:
                 print('This experiment was incomplete:',text,'\nit will not be used.')
 
@@ -1473,8 +1458,9 @@ class PyMEGABASE:
             nproc (int, required):
                 Number of processors dedicated to download and process data
             all_exp (bool, optional):
-                Download and process all replicas for each experiment
+                Download and process all replicas for each experiment. Set as 'False' to download only 1 replica per experiment
         """
+        #Create directory for target cell data
         try:
             os.mkdir(self.cell_line_path)
         except:
@@ -1482,7 +1468,7 @@ class PyMEGABASE:
             print('Deleting path and creating it anew')
             shutil.rmtree(self.cell_line_path)
             os.mkdir(self.cell_line_path)
-        
+        #Prepare url to fetch target cell data
         url='https://www.encodeproject.org/metadata/?type=Experiment&'+self.extra_filter
         if self.hist==True:
             url=url+'assay_title=Histone+ChIP-seq'
@@ -1495,7 +1481,7 @@ class PyMEGABASE:
         if self.total_rna==True:
             url=url+'&assay_title=total+RNA-seq'
         self.url_cell_line=url+'&biosample_ontology.term_name='+self.cell_line+'&files.file_type='+self.file_format
-
+        # Request data from ENCODE server
         r = requests.get(self.url_cell_line)
         content=str(r.content)
         experiments=[]
@@ -1516,12 +1502,11 @@ class PyMEGABASE:
                     f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
                     f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
-       
+        # Record experiments, number of replicas and their accession numbers
         count=0
         self.exp_found={}
         exp_name=''
         list_names=[]
-
         with open(self.cell_line_path+'/meta.txt') as fp:
             Lines = fp.readlines()
             for line in Lines:
@@ -1529,7 +1514,6 @@ class PyMEGABASE:
                 text=line.split()[0]
                 exp=line.split()[1]
                 sr_number=line.split()[-1]
-
                 #Register if experiment is new
                 if exp!=exp_name:
                     try:
@@ -1543,7 +1527,7 @@ class PyMEGABASE:
                 else:
                     if count==1:
                         list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
-
+        #Process signal for each replica in parallel 
         print('Number of replicas:', len(list_names))
         if self.file_format=='bigWig':
             self.successful_exp = Parallel(n_jobs=nproc)(delayed(self.process_replica_bw)(list_names[i],self.cell_line_path,self.chrm_size) 
@@ -1551,6 +1535,7 @@ class PyMEGABASE:
         else:
             self.successful_exp = Parallel(n_jobs=nproc)(delayed(self.process_replica_bed)(list_names[i],self.cell_line_path,self.chrm_size) 
                                         for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
+        #Record the replicas/experiments that were successfully processed
         self.successful_exp= [i for i in self.successful_exp if i]
         self.successful_unique_exp=np.unique(self.successful_exp)
         self.su_unique=[]   
@@ -1558,7 +1543,7 @@ class PyMEGABASE:
             self.su_unique.append(e.split('-'+self.organism)[0])
         print('Experiments found in ENCODE for the selected cell line:')
         self.unique=[]
-
+        #Save the set of unique experiments found in the target cell
         with open(self.cell_line_path+'/unique_exp.txt', 'w') as f:
             for e in self.experiments_unique:
                 if e.split('-human')[0] in self.su_unique:
@@ -1578,8 +1563,9 @@ class PyMEGABASE:
             nproc (int, required):
                 Number of processors dedicated to download and process data
             all_exp (bool, optional):
-                Download and process all replicas for each experiment
+                Download and process all replicas for each experiment. Set as 'False' to download only 1 replica per experiment
         """
+        #Create directory for target cell data
         try:
             os.mkdir(self.ref_cell_line_path)
         except:
@@ -1587,7 +1573,7 @@ class PyMEGABASE:
             print('Deleting path and creating it anew')
             shutil.rmtree(self.ref_cell_line_path)
             os.mkdir(self.ref_cell_line_path)
-        
+        #Prepare url to fetch target cell data
         url='https://www.encodeproject.org/metadata/?type=Experiment&'
         if self.hist==True:
             url=url+'assay_title=Histone+ChIP-seq'
@@ -1600,7 +1586,7 @@ class PyMEGABASE:
         if self.total_rna==True:
             url=url+'&assay_title=total+RNA-seq'
         self.url_ref=url+'&biosample_ontology.term_name='+self.ref_cell_line+'&files.file_type='+self.file_format
-
+        # Record experiments, number of replicas and their accession numbers
         r = requests.get(self.url_ref)
         content=str(r.content)
         experiments=[]
@@ -1621,13 +1607,12 @@ class PyMEGABASE:
                     f.write(l[0]+' '+'minus-small-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
                 elif l[5]==self.ref_assembly and l[4]=='minus strand signal of all reads' and l[7]=='total RNA-seq':
                     f.write(l[0]+' '+'minus-total-RNA-seq'+' '+l[5]+' '+l[4]+' '+l[6]+'\n')
-        
+        # Record experiments, number of replicas and their accession numbers
         ref_chrm_size = self.ref_chrm_size
         count=0
         exp_found={}
         exp_name=''
         list_names=[]
-
         with open(self.ref_cell_line_path+'/meta.txt') as fp:
             Lines = fp.readlines()
             for line in Lines:
@@ -1635,7 +1620,6 @@ class PyMEGABASE:
                 text=line.split()[0]
                 exp=line.split()[1]
                 sr_number=line.split()[-1]
-
                 #Register if experiment is new
                 if (exp.split('-human')[0] in self.su_unique) or (text.split('-human')[0] in self.su_unique):
                     if exp!=exp_name:
@@ -1650,15 +1634,14 @@ class PyMEGABASE:
                     else:
                         if count==1:
                             list_names.append(text+' '+exp+' '+str(count)+' '+sr_number)
-
         print('Number of replicas:', len(list_names))
-
+        #Process signal for each replica in parallel 
         if self.file_format=='bigWig':
             results = Parallel(n_jobs=nproc)(delayed(self.process_replica_bw)(list_names[i],self.ref_cell_line_path,ref_chrm_size) 
-                                      for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
+                                    for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
         else:
             results = Parallel(n_jobs=nproc)(delayed(self.process_replica_bed)(list_names[i],self.ref_cell_line_path,ref_chrm_size) 
-                                      for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
+                                    for i in tqdm(range(len(list_names)), desc="Process replicas",bar_format='{l_bar}{bar:40}{r_bar}{bar:-10b}'))
         print('Prediction will use:')
         with open(self.ref_cell_line_path+'/unique_exp.txt', 'w') as f:
             for e in self.unique:
@@ -1669,13 +1652,13 @@ class PyMEGABASE:
     def custom_bw_track(self,experiment,bw_file):
         R"""
         Function to introduce custom bigwig tracks
-
         Args: 
             experiment (str, required):
                 Name of the experiment
             bw_file (str, required):
                 Path to the custom track
         """
+        #Format the name of the experiment
         if not self.organism in experiment: experiment=experiment+'-'+self.organism
         if not experiment.split('-'+self.organism)[0] in self.es_unique: 
             print('This experiment is not found in the training set, then cannot be used.')
@@ -1692,21 +1675,18 @@ class PyMEGABASE:
             count=1
         exp_path=self.cell_line_path+'/'+experiment+'_'+str(count)
         print(exp_path)
-        
+        # Create directory for new replica
         try:
             os.mkdir(exp_path)
         except:
             print('Directory ',exp_path,' already exist')
-
         with open(exp_path+'/exp_name.txt', 'w') as f:
             f.write(experiment+' '+experiment+'\n')
-
         #Load data from track
         try:
             bw = pyBigWig.open(bw_file)
             for chr in range(1,len(self.chrm_size)):
                 signal = bw.stats("chr"+str(chr), type="mean", nBins=self.chrm_size[chr-1])
-
                 #Process signal and binning
                 signal=np.array(signal)
                 per=np.percentile(signal[signal!=None],95)
@@ -1717,10 +1697,8 @@ class PyMEGABASE:
                 signal=signal-per_min
                 signal=signal*self.n_states/(per-per_min)
                 signal=np.round(signal.astype(float)).astype(int)
-
                 #Save data
                 with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
-
                     f.write("#chromosome file number of beads\n"+str(self.chrm_size[chr-1]))
                     f.write("#\n")
                     f.write("#bead, signal, discrete signal\n")
@@ -1728,7 +1706,6 @@ class PyMEGABASE:
                         f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
             chr='X'
             signal = bw.stats("chr"+chr, type="mean", nBins=self.chrm_size[-1])
-
             #Process signal and binning
             signal=np.array(signal)
             per=np.percentile(signal[signal!=None],95)
@@ -1739,19 +1716,16 @@ class PyMEGABASE:
             signal=signal-per_min
             signal=signal*self.n_states/(per-per_min)
             signal=np.round(signal.astype(float)).astype(int)
-
             #Save data
             with open(exp_path+'/chr'+chr+'.track', 'w') as f:
-
                 f.write("#chromosome file number of beads\n"+str(self.chrm_size[-1]))
                 f.write("#\n")
                 f.write("#bead, signal, discrete signal\n")
                 for i in range(len(signal)):
                     f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
-
+            # Register new replica in the existing set of experiments
             if experiment in self.exp_found.keys():
                 self.exp_found[experiment]=self.exp_found[experiment]+1
-
             else:
                 self.exp_found[experiment]=1
                 self.successful_unique_exp=np.append(self.successful_unique_exp,experiment)
@@ -1759,22 +1733,20 @@ class PyMEGABASE:
                 with open(self.cell_line_path+'/unique_exp.txt', 'a') as f:
                     f.write(experiment.split('-'+self.organism)[0]+'\n')
                     self.unique.append(experiment)
-
             return experiment
-        
         except:
             print('This experiment was incomplete:',experiment,'\nit will not be used.')
 
     def custom_bed_track(self,experiment,bed_file):
         R"""
         Function to introduce custom bed tracks
-
         Args: 
             experiment (str, required):
                 Name of the experiment
             bed_file (str, required):
                 Path to the custom track
         """
+        #Format the name of the experiment
         if not self.organism in experiment: experiment=experiment+'-'+self.organism
         if not experiment.split('-'+self.organism)[0] in self.es_unique: 
             print('This experiment is not found in the training set, then cannot be used.')
@@ -1791,15 +1763,13 @@ class PyMEGABASE:
             count=1
         exp_path=self.cell_line_path+'/'+experiment+'_'+str(count)
         print(exp_path)
-        
+        # Create directory for new replica
         try:
             os.mkdir(exp_path)
         except:
             print('Directory ',exp_path,' already exist')
-
         with open(exp_path+'/exp_name.txt', 'w') as f:
             f.write(experiment+' '+experiment+'\n')
-
         def get_records(bed_file):
             try:
                 response = urllib.request.urlopen(bed_file)
@@ -1814,8 +1784,6 @@ class PyMEGABASE:
                 except:
                     data=np.loadtxt(bed_file,dtype=str)
             return data
-                
-
         #Load data from track
         try:
             data=get_records(bed_file)
@@ -1836,7 +1804,6 @@ class PyMEGABASE:
                         p=(ndx2-ll[0]/(self.res*1000))/((ll[1]-ll[0])/(self.res*1000))
                         signal[ndx1]+=ll[2]*p
                         signal[ndx2]+=ll[2]*(1-p)
-
                 #Process signal and binning
                 signal=np.array(signal)
                 per=np.percentile(signal[signal!=None],95)
@@ -1847,10 +1814,8 @@ class PyMEGABASE:
                 signal=signal-per_min
                 signal=signal*self.n_states/(per-per_min)
                 signal=np.round(signal.astype(float)).astype(int)
-
                 #Save data
                 with open(exp_path+'/chr'+str(chr)+'.track', 'w') as f:
-
                     f.write("#chromosome file number of beads\n"+str(self.chrm_size[chr-1]))
                     f.write("#\n")
                     f.write("#bead, signal, discrete signal\n")
@@ -1872,7 +1837,6 @@ class PyMEGABASE:
                     p=(ndx2-ll[0]/(self.res*1000))/((ll[1]-ll[0])/(self.res*1000))
                     signal[ndx1]+=ll[2]*p
                     signal[ndx2]+=ll[2]*(1-p)
-
             #Process signal and binning
             signal=np.array(signal)
             per=np.percentile(signal[signal!=None],95)
@@ -1883,19 +1847,15 @@ class PyMEGABASE:
             signal=signal-per_min
             signal=signal*self.n_states/(per-per_min)
             signal=np.round(signal.astype(float)).astype(int)
-
             #Save data
             with open(exp_path+'/chr'+chr+'.track', 'w') as f:
-
                 f.write("#chromosome file number of beads\n"+str(self.chrm_size[-1]))
                 f.write("#\n")
                 f.write("#bead, signal, discrete signal\n")
                 for i in range(len(signal)):
                     f.write(str(i)+" "+str(signal[i])+" "+str(signal[i].astype(int))+"\n")
-
             if experiment in self.exp_found.keys():
                 self.exp_found[experiment]=self.exp_found[experiment]+1
-
             else:
                 self.exp_found[experiment]=1
                 self.successful_unique_exp=np.append(self.successful_unique_exp,experiment)
@@ -1903,9 +1863,7 @@ class PyMEGABASE:
                 with open(self.cell_line_path+'/unique_exp.txt', 'a') as f:
                     f.write(experiment.split('-'+self.organism)[0]+'\n')
                     self.unique.append(experiment)
-
             return experiment
-        
         except:
             print('This experiment was incomplete:',experiment,'\nit will not be used.')
 
@@ -1936,15 +1894,12 @@ class PyMEGABASE:
         shift_2=np.copy(all_averages)
         shift_2[:,1:]=shift_1[:,:-1]
         shift_2[:,0]=np.zeros(len(shift1[:,-1]))
-
         #Stack shifted tracks and subtypes labels
         all_averages=np.vstack((int_types,shift_2,shift_1,all_averages,shift1,shift2))
-
         #To train, we exclude the centromers and B4 subcompartments
         ndx=(all_averages[0,:]!=6) * (all_averages[0,:]!=5)
         all_averages=all_averages[:,ndx]
         all_averages=all_averages+1
-
         return all_averages
 
     def get_tmatrix(self,chrms,silent=False):
@@ -1971,16 +1926,13 @@ class PyMEGABASE:
                     for i in range( diff ):
                         tmp.append('NA')
                 types.append(tmp)
-
         types=np.concatenate(types)
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
-
         #Check which experiments are available to train 
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
         if unique.shape==(): unique=[unique]
         if silent==False:print('To train the following experiments are used:')
-
-        #Load each track and average over 
+        #Load each track and average over replicas
         all_averages=[]
         for u in unique:
             reps=[]
@@ -1998,14 +1950,14 @@ class PyMEGABASE:
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
-
+        #Build state vectors of the Potts model for training
         all_averages=np.array(all_averages)
         all_averages=self.build_state_vector(int_types,all_averages)
         return all_averages
 
     def filter_exp(self):
         R"""
-        Performs baseline assestment on experiment baselines
+        Performs assestment on experiment signal-to-noise ration based on mean and std of the signal compared to the GM12878 equivalent using chromosomes 1 and 2
         """
         a=[]
         for i in range(1,3):
@@ -2016,7 +1968,7 @@ class PyMEGABASE:
         good_exp=0
         gexp=[]
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str)
-
+        #Compare mean and std of signal of target cell and GM12878 
         for exper in range(len(unique)):
             i=exper+len(unique)*locus
             if (np.abs(np.mean(a[i])-np.mean(self.tmatrix[i+1]))<1) and (np.std(a[i])-np.std(self.tmatrix[i+1])<2):
@@ -2024,8 +1976,7 @@ class PyMEGABASE:
                 gexp.append(unique[exper]+'\n')
             else:
                 print('Not using '+unique[exper],' to predict')
-
-        #gexp=sample(gexp,8)
+        #Records the experiments whose signal-to-noise ration is similar to GM12878
         with open(self.cell_line_path+'/unique_exp_filtered.txt','w') as f:    
             for i in gexp:
                 f.write(i)
@@ -2052,18 +2003,14 @@ class PyMEGABASE:
                 chrms=[1,3,5,7,9,11,13,15,17,19,21]
             else:
                 chrms=[i for i in range(1,23)]
-        
         if filter==True: 
             all_averages=self.get_tmatrix(chrms,silent=True)
             self.tmatrix=np.copy(all_averages)
             self.filter_exp()
-
         all_averages=self.get_tmatrix(chrms,silent=False)
         self.tmatrix=np.copy(all_averages)
-        
         # Translate Potts states to sequences
         sequences=np.array(list(map(self.INT_TO_RES.get, all_averages.flatten()))).reshape(all_averages.shape)
-
         #Generate sequence file 
         with open(self.cell_line_path+"/sequences.fa",'w',encoding = 'utf-8') as f:
             for i in range(len(sequences.T)):
@@ -2081,10 +2028,6 @@ class PyMEGABASE:
                 Value for the intensity of the regularization value for the h energy term
             lambda_J (float, optional):
                 Value for the intensity of the regularization value for the J energy term
-        Returns:
-            array (size of chromosome,5*number of unique experiments)
-                D-node input data
-
         """
         # Compute DCA scores using Pseudolikelihood maximization algorithm
         plmdca_inst = plmdca.PlmDCA(
@@ -2101,11 +2044,9 @@ class PyMEGABASE:
         self.plmdca_inst=plmdca_inst
         fields_and_couplings = self.fields_and_couplings
         couplings = plmdca_inst.get_couplings_no_gap_state(fields_and_couplings)
-        fields = plmdca_inst.get_fields_no_gap_state(fields_and_couplings)
-
         #Reshape couplings and fields to a working format 
-        # J should be shaped (56,56,20,20)
-        # h should be shaped (56,20)
+        # J should be shaped (len(exp)*5+1,len(exp)*5+1,20,20)
+        # h should be shaped (len(exp)*5+1,20)
         L = plmdca_inst._get_num_and_len_of_seqs()[1]
         q = 21
         self.L=L
@@ -2139,7 +2080,6 @@ class PyMEGABASE:
     def test_set(self,chr=1,silent=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
-
         Args: 
             chr (int, required):
                 Chromosome to extract input data fro the D-nodes
@@ -2148,7 +2088,6 @@ class PyMEGABASE:
         Returns:
             array (size of chromosome,5*number of unique experiments)
                 D-node input data
-
         """
         if silent==False:print('Test set for chromosome: ',chr)        
         if chr!='X':
@@ -2156,7 +2095,6 @@ class PyMEGABASE:
         else:
             types=["A1" for i in range(self.chrm_size[-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
-        
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
         if unique.shape==(): unique=[unique]
         #Load each track and average over 
@@ -2173,7 +2111,6 @@ class PyMEGABASE:
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
-
         all_averages=np.array(all_averages)
         chr_averages=self.build_state_vector(int_types,all_averages)-1
         return chr_averages[1:]+1
@@ -2181,7 +2118,6 @@ class PyMEGABASE:
     def prediction_single_chrom(self,chr=1,h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
-
         Args: 
             chr (int, optional):
                 Chromosome to predict
@@ -2191,19 +2127,17 @@ class PyMEGABASE:
         Returns:
             array (size of chromosome)
                 Predicted annotations
-
         """
-        print('Predicting subcompartments for chromosome: ',chr)       
+        print('Predicting subcompartments for chromosome: ',chr)    
+        #Load fields and couplings from file or memory   
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
                 h_and_J = np.load(f, allow_pickle=True)
                 h_and_J = h_and_J.item()
             self.h=h_and_J['h']
             self.J=h_and_J['J']
- 
         types=["A1" for i in range(self.chrm_size[chr-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
-        
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
         if unique.shape==(): unique=[unique]
         #Load each track and average over 
@@ -2220,13 +2154,10 @@ class PyMEGABASE:
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
-
         all_averages=np.array(all_averages)
         self.chr_averages=self.build_state_vector(int_types,all_averages)-1
-        
         #Prediction 
         predict_type=np.zeros(self.chr_averages.shape[1])
-        fails=0;r=0;
         self.L=len(self.h)
         enes=[]
         probs=[]
@@ -2273,20 +2204,15 @@ class PyMEGABASE:
     def prediction_X(self,chr='X',h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
-
         Args: 
             chr (int, optional):
                 Chromosome to predict
             h_and_J_file (str, optional):
                 Model energy term file path
-        
         Returns:
             array (size of chromosome)
                 Predicted annotations
-
         """
-
-
         print('Predicting subcompartments for chromosome: ',chr)       
         if h_and_J_file!=None:
             with open(h_and_J_file, 'rb') as f:
@@ -2294,10 +2220,8 @@ class PyMEGABASE:
                 h_and_J = h_and_J.item()
             self.h=h_and_J['h']
             self.J=h_and_J['J']
- 
         types=["A1" for i in range(self.chrm_size[-1])]
         int_types=np.array(list(map(self.TYPE_TO_INT.get, types)))
-        
         unique=np.loadtxt(self.cell_line_path+'/unique_exp.txt',dtype=str) 
         if unique.shape==(): unique=[unique]
         #Load each track and average over 
@@ -2314,13 +2238,10 @@ class PyMEGABASE:
             reps=np.array(reps)
             ave_reps=np.round(np.mean(reps,axis=0))
             all_averages.append(ave_reps)
-
         all_averages=np.array(all_averages)
         self.chr_averages=self.build_state_vector(int_types,all_averages)-1
-        
         #Prediction 
         predict_type=np.zeros(self.chr_averages.shape[1])
-        fails=0;r=0
         self.L=len(self.h)
         enes=[]
         probs=[]
@@ -2354,7 +2275,6 @@ class PyMEGABASE:
                 probs[init_loci:end_loci]=0
         except:
             print('Gaps not found, not included in predictions')
-        
         if energies==True:
             if probabilities==True:
                 return predict_type, enes, probs
@@ -2369,7 +2289,6 @@ class PyMEGABASE:
     def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
         R"""
         Formats and saves predictions on BED format
-
         Args: 
             out_file (str, optional):
                 Folder/Path to save the prediction results
@@ -2377,18 +2296,14 @@ class PyMEGABASE:
                 Whether generate files with subcompartment annotations 
             save_compartments (bool, optional):
                 Whether generate files with compartment annotations
-        
         Returns:
             predictions_subcompartments (dict), predictions_compartments (dict)
                 Predicted subcompartment annotations and compartment annotations on dictionaries organized by chromosomes
-
         """
         def get_color(s_id):
             return info[s_id][1]
-
         def get_num(s_id):
             return str(info[s_id][0])
-
         def get_bed_file_line(chromosome, position, c_id):
             if self.chrom_l['chr'+str(chromosome)]>position*resolution:
                 return "chr" + str(chromosome) + "\t" + str((position - 1) * resolution) + "\t" + str(
@@ -2437,7 +2352,6 @@ class PyMEGABASE:
                 all_data['X'] = data
             except:
                 print('Didnt found chrom X:',chrom_index)
-
             with open(out_file+ext+'.bed', 'w') as f:
                 header='# Experiments used for this prediction: '
                 for exp in exps:
@@ -2458,7 +2372,6 @@ class PyMEGABASE:
         for u in unique:
             os.system('cat '+self.cell_line_path+'/'+u+'*/exp_accession.txt | awk \'{print $1}\'  | sort | uniq >> '+self.cell_line_path+'/exps_used.dat')
         exps=np.loadtxt(self.cell_line_path+'/exps_used.dat',dtype=str)
-
         resolution=self.res*1000
         info = {
             "NA": (0, "255,255,255"),
@@ -2473,14 +2386,12 @@ class PyMEGABASE:
         }
         if compartments==True:
             save_bed('c')
-
         if subcompartments==True:
             save_bed('s')
 
     def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for all the chromosomes
-
         Args: 
             path (str, optional):
                 Folder/Path to save the prediction results
@@ -2488,11 +2399,9 @@ class PyMEGABASE:
                 Whether generate files with subcompartment annotations for each chromosomes
             save_compartments (bool, optional):
                 Whether generate files with compartment annotations for each chromosomes
-        
         Returns:
             predictions_subcompartments (dict), predictions_compartments (dict)
                 Predicted subcompartment annotations and compartment annotations on dictionaries organized by chromosomes
-
         """
         if path==None: path=self.cell_line_path+'/predictions'
         print('Saving prediction in:',path)
@@ -2500,13 +2409,13 @@ class PyMEGABASE:
         TYPE_TO_INT = {'A1':0,'A2':1,'B1':2,'B2':3,'B3':4,'B4':5,'NA':6}
         INT_TO_TYPE = {TYPE_TO_INT[k]:k for k in TYPE_TO_INT.keys()}
         INT_TO_TYPE_AB = {0:'A', 1:'A', 2:'B', 3:'B', 4:'B', 5:'B', 6:'NA'}
-
         os.system('mkdir '+path)
         #Predict and save data for chromosomes
         predictions_subcompartments={}
         predictions_compartments={}
         energies_chr={}
         probabilities_chr={}
+        #Generate desired outputs (energies, probabilities and/or annoations)
         for chr in range(1,len(self.chrm_size)):
             if energies==True:
                 if probabilities==True:
@@ -2535,7 +2444,6 @@ class PyMEGABASE:
                         f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
             predictions_subcompartments[chr]=types_pyME_sub
             predictions_compartments[chr]=types_pyME_AB
-
         #Chromosome X
         chr='X'
         pred=self.prediction_X(h_and_J_file=self.cell_line_path+'/h_and_J.npy')
@@ -2546,13 +2454,13 @@ class PyMEGABASE:
             with open(path+'/chr'+str(chr)+'_subcompartments.txt','w',encoding = 'utf-8') as f:
                 for i in range(len(types_pyME_sub)):
                     f.write("{} {}\n".format(i+1,types_pyME_sub[i]))
-                    
         if save_compartments==True:
             with open(path+'/chr'+str(chr)+'_compartments.txt','w',encoding = 'utf-8') as f:
                 for i in range(len(types_pyME_AB)):
-                    f.write("{} {}\n".format(i+1,types_pyME_AB[i]))     
-
+                    f.write("{} {}\n".format(i+1,types_pyME_AB[i]))
+        #Write output bed file
         self.write_bed(out_file=path+'/predictions', compartments=save_compartments,subcompartments=save_subcompartments)
+        #Return desired outputs
         if energies==True:
             if probabilities==True:
                 return predictions_subcompartments, predictions_compartments, energies_chr, probabilities_chr
@@ -2563,8 +2471,7 @@ class PyMEGABASE:
                 return predictions_subcompartments, predictions_compartments, probabilities_chr
             else:
                 return predictions_subcompartments, predictions_compartments
-        
-
+            
     def printHeader(self):
         print('{:^96s}'.format("****************************************************************************************"))
         print('{:^96s}'.format("**** *** *** *** *** *** *** *** PyMEGABASE-1.0.0 *** *** *** *** *** *** *** ****"))
