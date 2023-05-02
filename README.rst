@@ -11,9 +11,8 @@ PyMEGABASE
    :target: https://ndb.rice.edu/MEGABASE-Documentation
 .. |NDB| image:: https://img.shields.io/badge/NDB-Nucleome%20Data%20Bank-informational
    :target: https://ndb.rice.edu/
-.. |Update| image:: https://anaconda.org/conda-forge/openmichrom/badges/latest_release_date.svg   
-   :target: https://anaconda.org/conda-forge/openmichrom
-.. |GitHub-Stars| image:: https://img.shields.io/github/stars/junioreif/OpenMiChroM.svg?style=social
+.. |Update| image:: https://img.shields.io/github/last-commit/ed29rice/PyMEGABASE  
+.. |GitHub-Stars| image:: https://img.shields.io/github/stars/ed29rice/PyMEGABASE?style=social
    :target: https://github.com/ed29rice/PyMEGABASE
 
 Overview
