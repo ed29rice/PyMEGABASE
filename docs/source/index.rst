@@ -7,7 +7,13 @@ Table of Contents
 
    GettingStarted/install
    GettingStarted/intro
-   
+
+.. toctree::
+   :maxdepth: 2
+   :caption: PyMEGABASE Modules
+
+   PyMEGABASE/PyMEGABASE
+
 .. toctree::
    :maxdepth: 1
    :caption: Tutorials
