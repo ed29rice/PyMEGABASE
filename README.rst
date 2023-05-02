@@ -40,21 +40,15 @@ The **PyMEGABASE** library can be installed via pip.
 
 You may need to install pyBigWig (pip install pyBigWig) before installing PyMEGABASE
 
-
-Install via conda
------------------
-
-
-Install via pip
------------------
-    
-    
 The following are libraries **required** for installing **PyMEGABASE**:
 
-- `Python <https://www.python.org/>`__ (>=3.6)
-- `NumPy <https://www.numpy.org/>`__ (>=1.14)
-- `SciPy <https://www.scipy.org/>`__ (>=1.5.0)
-- `six <https://pypi.org/project/six/>`__ (>=1.14.0)
-- `h5py <https://www.h5py.org/>`__ (>=2.0.0)
-- `pandas <https://pandas.pydata.org/>`__ (>=1.0.0)
-- `scikit-learn <https://scikit-learn.org/>`__ (>=0.20.0)
+- 'numpy'
+- 'glob2>=0.7'
+- 'requests'
+- 'pytest-shutil>=1.7.0'
+- 'pyBigWig>=0.3.18'
+- 'urllib3>=1.26.14'
+- 'tqdm>=4.64.1'
+- 'joblib>=1.2.0'
+- 'pydca>=1.23'
+- 'ipywidgets>=8.0.4'
