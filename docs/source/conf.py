@@ -22,7 +22,7 @@ autodoc_mock_imports = ["numpy","scipy","itertools","os","sys","time","random"]
 # -- Project information -----------------------------------------------------
 
 project = 'PyMEGABASE'
-copyright = '2020-2022 The Center for Theoretical Biological Physics (CTBP) - Rice University'
+copyright = '2020-2023 The Center for Theoretical Biological Physics (CTBP) - Rice University'
 author = 'Esteban Dodero-Rojas, Vinícius G. Contessoto & Antonio B. Oliveira Jr.'
 
 # The full version, including alpha/beta/rc tags

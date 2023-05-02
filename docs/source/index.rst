@@ -9,7 +9,7 @@ Table of Contents
    GettingStarted/intro
    
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Tutorials
 
    Tutorials/Prediction_of_human_cells
