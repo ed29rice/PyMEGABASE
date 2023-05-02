@@ -12,7 +12,7 @@ Table of Contents
    :maxdepth: 2
    :caption: PyMEGABASE Modules
 
-   PyMEGABASE/PyMEGABASE
+   PyMEGABASE
 
 .. toctree::
    :maxdepth: 1
