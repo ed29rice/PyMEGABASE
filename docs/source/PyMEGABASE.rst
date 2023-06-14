@@ -1,7 +1,7 @@
 PyMEGABASE
 ========
 
-.. automodule:: PyMEGABASE.PyMEGABASE
+.. automodule:: PyMEGABASE
    :members:
    :undoc-members:
    :show-inheritance:
