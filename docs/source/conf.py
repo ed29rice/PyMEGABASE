@@ -16,7 +16,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../.."))
-# sys.path.insert(0, os.path.abspath("../../.."))
+sys.path.insert(0, os.path.abspath("../../PyMEGABASE"))
+
 autodoc_mock_imports = ["numpy","scipy","itertools","os","sys","time","random","pyBigWig","tqdm","joblib","urllib","pydca"]
 
 # -- Project information -----------------------------------------------------
