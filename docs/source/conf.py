@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, os.path.abspath(".."))
 sys.path.insert(0, os.path.abspath("../.."))
 # sys.path.insert(0, os.path.abspath("../../.."))
-autodoc_mock_imports = ["numpy","scipy","itertools","os","sys","time","random"]
+autodoc_mock_imports = ["numpy","scipy","itertools","os","sys","time","random","pyBigWig"]
 
 # -- Project information -----------------------------------------------------
 
