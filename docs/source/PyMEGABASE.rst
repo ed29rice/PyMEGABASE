@@ -1,8 +1,5 @@
 PyMEGABASE
-==================
-
-PyMEGABASE
-----------------------------
+========
 
 .. automodule:: PyMEGABASE
    :members:
