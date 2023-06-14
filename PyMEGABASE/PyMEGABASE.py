@@ -557,6 +557,7 @@ class PyMEGABASE:
     def custom_bw_track(self,experiment,bw_file):
         R"""
         Function to introduce custom bigwig tracks
+        
         Args: 
             experiment (str, required):
                 Name of the experiment
@@ -645,6 +646,7 @@ class PyMEGABASE:
     def custom_bed_track(self,experiment,bed_file):
         R"""
         Function to introduce custom bed tracks
+        
         Args: 
             experiment (str, required):
                 Name of the experiment
@@ -985,6 +987,7 @@ class PyMEGABASE:
     def test_set(self,chr=1,silent=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
+        
         Args: 
             chr (int, required):
                 Chromosome to extract input data fro the D-nodes
@@ -1023,6 +1026,7 @@ class PyMEGABASE:
     def prediction_single_chrom(self,chr=1,h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
+        
         Args: 
             chr (int, optional):
                 Chromosome to predict
@@ -1109,6 +1113,7 @@ class PyMEGABASE:
     def prediction_X(self,chr='X',h_and_J_file=None,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for chromosome X
+        
         Args: 
             chr (int, optional):
                 Chromosome to predict
@@ -1194,6 +1199,7 @@ class PyMEGABASE:
     def write_bed(self,out_file='predictions', compartments=True,subcompartments=True):
         R"""
         Formats and saves predictions on BED format
+        
         Args: 
             out_file (str, optional):
                 Folder/Path to save the prediction results
@@ -1297,6 +1303,7 @@ class PyMEGABASE:
     def prediction_all_chrm(self,path=None,save_subcompartments=True,save_compartments=True,energies=False,probabilities=False):
         R"""
         Predicts and outputs the genomic annotations for all the chromosomes
+        
         Args: 
             path (str, optional):
                 Folder/Path to save the prediction results
